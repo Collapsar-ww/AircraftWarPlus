@@ -1,5 +1,12 @@
 package edu.hitsz.application;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.EnemyBullet;
 import edu.hitsz.bullet.HeroBullet;
@@ -8,129 +15,186 @@ import edu.hitsz.prop.BombProp;
 import edu.hitsz.prop.BulletProp;
 import edu.hitsz.prop.SuperBulletProp;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import edu.hitsz.R;
 
 /**
- * 综合管理图片的加载，访问
- * 提供图片的静态访问方法
+ * Android 版图片资源管理器
  *
- * @author hitsz
+ * 设计目标：
+ * 1. 替代桌面版 FileInputStream + ImageIO
+ * 2. 统一从 Android drawable 资源加载
+ * 3. 统一维护对象类 -> 图片映射
+ * 4. 后续可扩展做缩放缓存 / 低内存优化 / 多分辨率适配
+ *
+ * 使用方式：
+ * 1. 在 Android Application / Activity 启动时调用：
+ *      ImageManager.init(context);
+ * 2. 之后全局可直接访问：
+ *      ImageManager.HERO_IMAGE
+ *      ImageManager.get(obj)
  */
-public class ImageManager {
+public final class ImageManager {
+
+    private ImageManager() {}
 
     /**
-     * 类名-图片 映射，存储各基类的图片 <br>
-     * 可使用 CLASSNAME_IMAGE_MAP.get( obj.getClass().getName() ) 获得 obj 所属基类对应的图片
+     * 类名-图片映射
      */
-    private static final Map<String, BufferedImage> CLASSNAME_IMAGE_MAP = new HashMap<>();
+    private static final Map<String, Bitmap> CLASSNAME_IMAGE_MAP = new HashMap<>();
 
-    public static BufferedImage EASY_BACKGROUND_IMAGE;
-    public static BufferedImage NORMAL_BACKGROUND_IMAGE;
-    public static BufferedImage HARD_BACKGROUND_IMAGE;
-    public static BufferedImage HERO_IMAGE;
-    public static BufferedImage HERO_BULLET_IMAGE;
-    public static BufferedImage ENEMY_BULLET_IMAGE;
-    public static BufferedImage MOB_ENEMY_IMAGE;
-    public static BufferedImage BOSS_ENEMY_IMAGE;
-    public static BufferedImage ELITE_ENEMY_IMAGE;
-    public static BufferedImage SUPER_ELITE_ENEMY_IMAGE;
-    public static BufferedImage BLOOD_PROP_IMAGE;
-    public static BufferedImage BOMB_PROP_IMAGE;
-    public static BufferedImage BULLET_PROP_IMAGE;
-    public static BufferedImage SUPER_BULLET_PROP_IMAGE;
+    /**
+     * 初始化标记，防止重复初始化
+     */
+    private static boolean initialized = false;
 
-    // 当前使用的背景图片
-    private static BufferedImage currentBackground = EASY_BACKGROUND_IMAGE;
+    // ========================
+    // 背景图
+    // ========================
+    public static Bitmap EASY_BACKGROUND_IMAGE;
+    public static Bitmap NORMAL_BACKGROUND_IMAGE;
+    public static Bitmap HARD_BACKGROUND_IMAGE;
 
-    static {
-        try {
+    // ========================
+    // 飞机 / 子弹 / 道具图
+    // ========================
+    public static Bitmap HERO_IMAGE;
+    public static Bitmap HERO_BULLET_IMAGE;
+    public static Bitmap ENEMY_BULLET_IMAGE;
+    public static Bitmap MOB_ENEMY_IMAGE;
+    public static Bitmap BOSS_ENEMY_IMAGE;
+    public static Bitmap ELITE_ENEMY_IMAGE;
+    public static Bitmap SUPER_ELITE_ENEMY_IMAGE;
+    public static Bitmap BLOOD_PROP_IMAGE;
+    public static Bitmap BOMB_PROP_IMAGE;
+    public static Bitmap BULLET_PROP_IMAGE;
+    public static Bitmap SUPER_BULLET_PROP_IMAGE;
 
-            EASY_BACKGROUND_IMAGE = ImageIO.read(new FileInputStream("src/images/bg.jpg"));
-            NORMAL_BACKGROUND_IMAGE = ImageIO.read(new FileInputStream("src/images/bg2.jpg"));
-            HARD_BACKGROUND_IMAGE = ImageIO.read(new FileInputStream("src/images/bg3.jpg"));
-            HERO_IMAGE = ImageIO.read(new FileInputStream("src/images/hero.png"));
-            MOB_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/mob.png"));
-            ELITE_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/elite.png"));
-            BOSS_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/boss.png"));
-            SUPER_ELITE_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/elitePlus.png"));
-            HERO_BULLET_IMAGE = ImageIO.read(new FileInputStream("src/images/bullet_hero.png"));
-            ENEMY_BULLET_IMAGE = ImageIO.read(new FileInputStream("src/images/bullet_enemy.png"));
-            BLOOD_PROP_IMAGE = ImageIO.read(new FileInputStream("src/images/prop_blood.png"));
-            BOMB_PROP_IMAGE = ImageIO.read(new FileInputStream("src/images/prop_bomb.png"));
-            BULLET_PROP_IMAGE = ImageIO.read(new FileInputStream("src/images/prop_bullet.png"));
-            SUPER_BULLET_PROP_IMAGE = ImageIO.read(new FileInputStream("src/images/prop_bulletPlus.png"));
+    /**
+     * 当前背景图
+     */
+    private static Bitmap currentBackground;
 
-            CLASSNAME_IMAGE_MAP.put(HeroAircraft.class.getName(), HERO_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(MobEnemy.class.getName(), MOB_ENEMY_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(EliteEnemy.class.getName(), ELITE_ENEMY_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(SuperEliteEnemy.class.getName(), SUPER_ELITE_ENEMY_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), BOSS_ENEMY_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), HERO_BULLET_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ENEMY_BULLET_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(BloodProp.class.getName(), BLOOD_PROP_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(BombProp.class.getName(), BOMB_PROP_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(BulletProp.class.getName(), BULLET_PROP_IMAGE);
-            CLASSNAME_IMAGE_MAP.put(SuperBulletProp.class.getName(), SUPER_BULLET_PROP_IMAGE);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(-1);
+    /**
+     * 初始化资源（必须在 Android 启动时调用一次）
+     */
+    public static void init(Context context) {
+        if (initialized) {
+            return;
         }
+
+        // ===== 背景 =====
+        EASY_BACKGROUND_IMAGE = load(context, R.drawable.bg_easy);
+        NORMAL_BACKGROUND_IMAGE = load(context, R.drawable.bg_normal);
+        HARD_BACKGROUND_IMAGE = load(context, R.drawable.bg_hard);
+
+        // ===== 飞机 =====
+        HERO_IMAGE = load(context, R.drawable.hero);
+        MOB_ENEMY_IMAGE = load(context, R.drawable.mob);
+        ELITE_ENEMY_IMAGE = load(context, R.drawable.elite);
+        BOSS_ENEMY_IMAGE = load(context, R.drawable.boss);
+        SUPER_ELITE_ENEMY_IMAGE = load(context, R.drawable.elite_plus);
+
+        // ===== 子弹 =====
+        HERO_BULLET_IMAGE = load(context, R.drawable.bullet_hero);
+        ENEMY_BULLET_IMAGE = load(context, R.drawable.bullet_enemy);
+
+        // ===== 道具 =====
+        BLOOD_PROP_IMAGE = load(context, R.drawable.prop_blood);
+        BOMB_PROP_IMAGE = load(context, R.drawable.prop_bomb);
+        BULLET_PROP_IMAGE = load(context, R.drawable.prop_bullet);
+        SUPER_BULLET_PROP_IMAGE = load(context, R.drawable.prop_bullet_plus);
+
+        // 默认背景
+        currentBackground = EASY_BACKGROUND_IMAGE;
+
+        // ===== 建立类映射 =====
+        CLASSNAME_IMAGE_MAP.put(HeroAircraft.class.getName(), HERO_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(MobEnemy.class.getName(), MOB_ENEMY_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(EliteEnemy.class.getName(), ELITE_ENEMY_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(SuperEliteEnemy.class.getName(), SUPER_ELITE_ENEMY_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), BOSS_ENEMY_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), HERO_BULLET_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ENEMY_BULLET_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(BloodProp.class.getName(), BLOOD_PROP_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(BombProp.class.getName(), BOMB_PROP_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(BulletProp.class.getName(), BULLET_PROP_IMAGE);
+        CLASSNAME_IMAGE_MAP.put(SuperBulletProp.class.getName(), SUPER_BULLET_PROP_IMAGE);
+
+        initialized = true;
+        System.out.println("ImageManager 初始化完成（Android）");
     }
 
     /**
-     * 根据难度设置背景图片
-     * @param difficulty 难度 ("简单", "普通", "困难")
+     * 加载单张图片
+     */
+    private static Bitmap load(Context context, int resId) {
+        return BitmapFactory.decodeResource(context.getResources(), resId);
+    }
+
+    /**
+     * 根据难度切换背景图
      */
     public static void setBackgroundByDifficulty(String difficulty) {
-        System.out.println("设置难度背景: " + difficulty);
+        if (!initialized) {
+            throw new IllegalStateException("ImageManager 尚未初始化，请先调用 ImageManager.init(context)");
+        }
+
         switch (difficulty) {
             case "简单":
                 currentBackground = EASY_BACKGROUND_IMAGE;
-                System.out.println("使用简单难度背景 (bg.jpg)");
+                System.out.println("使用简单难度背景 (bg_easy)");
                 break;
             case "普通":
                 currentBackground = NORMAL_BACKGROUND_IMAGE;
-                System.out.println("使用普通难度背景 (bg2.jpg)");
+                System.out.println("使用普通难度背景 (bg_normal)");
                 break;
             case "困难":
                 currentBackground = HARD_BACKGROUND_IMAGE;
-                System.out.println("使用困难难度背景 (bg3.jpg)");
+                System.out.println("使用困难难度背景 (bg_hard)");
                 break;
             default:
                 currentBackground = EASY_BACKGROUND_IMAGE;
-                System.out.println("使用默认背景 (bg.jpg)");
+                System.out.println("使用默认背景 (bg_easy)");
                 break;
         }
     }
 
     /**
-     * 获取当前背景图片
+     * 获取当前背景图
      */
-    public static BufferedImage getCurrentBackground() {
+    public static Bitmap getCurrentBackground() {
         return currentBackground;
     }
 
     /**
-     * 获取默认背景（保持兼容性）
+     * 保持兼容旧接口
      */
-    public static BufferedImage getBackground() {
+    public static Bitmap getBackground() {
         return getCurrentBackground();
     }
 
-    public static BufferedImage get(String className){
+    /**
+     * 根据类名获取图片
+     */
+    public static Bitmap get(String className) {
         return CLASSNAME_IMAGE_MAP.get(className);
     }
 
-    public static BufferedImage get(Object obj){
-        if (obj == null){
+    /**
+     * 根据对象获取图片
+     */
+    public static Bitmap get(Object obj) {
+        if (obj == null) {
             return null;
         }
         return get(obj.getClass().getName());
+    }
+
+    /**
+     * 判断是否已初始化
+     */
+    public static boolean isInitialized() {
+        return initialized;
     }
 }

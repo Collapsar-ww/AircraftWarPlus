@@ -3,27 +3,30 @@ package edu.hitsz.basic;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.application.Main;
-
-import java.awt.image.BufferedImage;
+import edu.hitsz.config.GameConfig;
 
 /**
- * 可飞行对象的父类
+ * 可飞行对象的父类（平台无关版）
  *
- * @author hitsz
+ * 职责：
+ * 1. 管理飞行对象位置、速度、碰撞、生命周期
+ * 2. 持有图片资源引用（不依赖具体图像类型）
+ *
+ * 说明：
+ * - 已移除 BufferedImage 依赖
+ * - 后续 Android 可直接接 Bitmap
  */
 public abstract class AbstractFlyingObject {
 
-    //locationX、locationY为图片中心位置坐标
     /**
-     * x 轴坐标
+     * x 轴坐标（图片中心）
      */
     protected int locationX;
 
     /**
-     * y 轴坐标
+     * y 轴坐标（图片中心）
      */
     protected int locationY;
-
 
     /**
      * x 轴移动速度
@@ -36,27 +39,25 @@ public abstract class AbstractFlyingObject {
     protected int speedY;
 
     /**
-     * 图片,
-     * null 表示未设置
+     * 图片资源对象（平台无关）
+     * 例如：
+     * - 桌面版可为 BufferedImage
+     * - Android 可为 Bitmap
      */
-    protected BufferedImage image = null;
+    protected Object image = null;
 
     /**
-     * x 轴长度，根据图片尺寸获得
-     * -1 表示未设置
+     * 对象宽度
      */
     protected int width = -1;
 
     /**
-     * y 轴长度，根据图片尺寸获得
-     * -1 表示未设置
+     * 对象高度
      */
     protected int height = -1;
 
-
     /**
-     * 有效（生存）标记，
-     * 通常标记为 false的对象会在下次刷新时清除
+     * 有效（生存）标记
      */
     protected boolean isValid = true;
 
@@ -77,42 +78,31 @@ public abstract class AbstractFlyingObject {
     public void forward() {
         locationX += speedX;
         locationY += speedY;
-        if (locationX <= 0 || locationX >= Main.WINDOW_WIDTH) {
-            // 横向超出边界后反向
+
+        if (locationX <= 0 || locationX >= GameConfig.Screen.WIDTH) {
             speedX = -speedX;
         }
     }
 
     /**
-     * 碰撞检测，当对方坐标进入我方范围，判定我方击中<br>
-     * 对方与我方覆盖区域有交叉即判定撞击。
-     *  <br>
-     * 非飞机对象区域：
-     *  横向，[x - width/2, x + width/2]
-     *  纵向，[y - height/2, y + height/2]
-     *  <br>
-     * 飞机对象区域：
-     *  横向，[x - width/2, x + width/2]
-     *  纵向，[y - height/4, y + height/4]
+     * 碰撞检测
      *
      * @param flyingObject 撞击对方
-     * @return true: 我方被击中; false 我方未被击中
+     * @return true: 我方被击中; false: 未被击中
      */
     public boolean crash(AbstractFlyingObject flyingObject) {
-        // 缩放因子，用于控制 y轴方向区域范围
-        int factor = this instanceof AbstractAircraft ? 2 : 1; //我方
-        int fFactor = flyingObject instanceof AbstractAircraft ? 2 : 1;//对方
+        int factor = this instanceof AbstractAircraft ? 2 : 1;
+        int fFactor = flyingObject instanceof AbstractAircraft ? 2 : 1;
 
-        //对方坐标、宽度、高度
         int x = flyingObject.getLocationX();
         int y = flyingObject.getLocationY();
         int fWidth = flyingObject.getWidth();
         int fHeight = flyingObject.getHeight();
 
-        return x + (fWidth+this.getWidth())/2 > locationX
-                && x - (fWidth+this.getWidth())/2 < locationX
-                && y + ( fHeight/fFactor+this.getHeight()/factor )/2 > locationY
-                && y - ( fHeight/fFactor+this.getHeight()/factor )/2 < locationY;
+        return x + (fWidth + this.getWidth()) / 2 > locationX
+                && x - (fWidth + this.getWidth()) / 2 < locationX
+                && y + (fHeight / fFactor + this.getHeight() / factor) / 2 > locationY
+                && y - (fHeight / fFactor + this.getHeight() / factor) / 2 < locationY;
     }
 
     public int getLocationX() {
@@ -123,7 +113,7 @@ public abstract class AbstractFlyingObject {
         return locationY;
     }
 
-    public void setLocation(double locationX, double locationY){
+    public void setLocation(double locationX, double locationY) {
         this.locationX = (int) locationX;
         this.locationY = (int) locationY;
     }
@@ -132,40 +122,67 @@ public abstract class AbstractFlyingObject {
         return speedY;
     }
 
-    public BufferedImage getImage() {
-        if (image == null){
+    /**
+     * 获取图片资源对象
+     */
+    public Object getImage() {
+        if (image == null) {
             image = ImageManager.get(this);
         }
         return image;
     }
 
+    /**
+     * 手动设置图片资源对象
+     */
+    public void setImage(Object image) {
+        this.image = image;
+    }
+
+    /**
+     * 获取对象宽度
+     */
     public int getWidth() {
-        if (width == -1){
-            // 若未设置，则查询图片宽度并设置
-            width = ImageManager.get(this).getWidth();
-        }
         return width;
     }
 
+    /**
+     * 设置对象宽度
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    /**
+     * 获取对象高度
+     */
     public int getHeight() {
-        if (height == -1){
-            // 若未设置，则查询图片高度并设置
-            height = ImageManager.get(this).getHeight();
-        }
         return height;
     }
+
+    /**
+     * 设置对象高度
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * 一次性设置尺寸
+     */
+    public void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
     public boolean notValid() {
         return !this.isValid;
     }
 
     /**
-     * 标记消失，
-     * isValid = false.
-     * notValid() => true.
+     * 标记消失
      */
     public void vanish() {
         isValid = false;
     }
-
 }
-
