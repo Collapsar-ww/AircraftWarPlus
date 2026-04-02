@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="#111122"
+    android:padding="32dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="飞机大战"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="选择难度"
+        android:textColor="#CCCCCC"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
+
+    <RadioGroup
+        android:id="@+id/rgDifficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="48dp">
+
+        <RadioButton
+            android:id="@+id/rbEasy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="简单"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="24dp"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rbNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="普通"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="24dp" />
+
+        <RadioButton
+            android:id="@+id/rbHard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="困难"
+            android:textColor="#FFFFFF" />
+
+    </RadioGroup>
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="56dp"
+        android:text="开始游戏"
+        android:textSize="18sp"
+        android:onClick="onStartGame" />
+
+</LinearLayout>

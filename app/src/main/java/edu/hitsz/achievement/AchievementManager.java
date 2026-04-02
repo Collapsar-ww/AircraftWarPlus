@@ -2,8 +2,6 @@ package edu.hitsz.achievement;
 
 import edu.hitsz.application.AudioManager;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

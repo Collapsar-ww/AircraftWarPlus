@@ -2,7 +2,6 @@ package edu.hitsz.basic;
 
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.application.ImageManager;
-import edu.hitsz.application.Main;
 import edu.hitsz.config.GameConfig;
 
 /**
