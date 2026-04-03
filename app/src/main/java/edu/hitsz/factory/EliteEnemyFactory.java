@@ -5,6 +5,7 @@ import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.config.AircraftConfig;
+import edu.hitsz.config.GameConfig;
 import edu.hitsz.strategy.StraightShoot;
 
 import java.util.Random;
@@ -29,8 +30,8 @@ public class EliteEnemyFactory implements EnemyFactory {
     @Override
     public AbstractAircraft createEnemy() {
         Random random = new Random();
-        int x = (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()));
-        int y = (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05);
+        int x = (int) (Math.random() * (GameConfig.Screen.WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()));
+        int y = (int) (Math.random() * GameConfig.Screen.HEIGHT * 0.05);
 
         // 使用基础配置并应用难度调整
         int baseHp = AircraftConfig.EliteEnemy.HP;

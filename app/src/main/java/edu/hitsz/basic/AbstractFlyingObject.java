@@ -89,19 +89,18 @@ public abstract class AbstractFlyingObject {
      * @param flyingObject 撞击对方
      * @return true: 我方被击中; false: 未被击中
      */
-    public boolean crash(AbstractFlyingObject flyingObject) {
-        int factor = this instanceof AbstractAircraft ? 2 : 1;
-        int fFactor = flyingObject instanceof AbstractAircraft ? 2 : 1;
+    public boolean crash(AbstractFlyingObject other) {
+        if (other == null || this.notValid() || other.notValid()) {
+            return false;
+        }
 
-        int x = flyingObject.getLocationX();
-        int y = flyingObject.getLocationY();
-        int fWidth = flyingObject.getWidth();
-        int fHeight = flyingObject.getHeight();
+        int thisHalfW = this.getWidth() / 2;
+        int thisHalfH = this.getHeight() / 2;
+        int otherHalfW = other.getWidth() / 2;
+        int otherHalfH = other.getHeight() / 2;
 
-        return x + (fWidth + this.getWidth()) / 2 > locationX
-                && x - (fWidth + this.getWidth()) / 2 < locationX
-                && y + (fHeight / fFactor + this.getHeight() / factor) / 2 > locationY
-                && y - (fHeight / fFactor + this.getHeight() / factor) / 2 < locationY;
+        return Math.abs(this.locationX - other.locationX) <= (thisHalfW + otherHalfW)
+                && Math.abs(this.locationY - other.locationY) <= (thisHalfH + otherHalfH);
     }
 
     public int getLocationX() {

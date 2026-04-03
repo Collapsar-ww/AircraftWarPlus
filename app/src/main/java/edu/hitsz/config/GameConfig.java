@@ -18,12 +18,20 @@ public class GameConfig {
     /**
      * 屏幕尺寸配置
      * 说明：
-     * - 当前先作为逻辑尺寸基准
-     * - 后续 Android 可通过 setScreenSize() 动态覆盖
+     * - DEFAULT_WIDTH / DEFAULT_HEIGHT：默认逻辑尺寸
+     * - WIDTH / HEIGHT：运行时真实屏幕尺寸
      */
     public static class Screen {
-        public static final int WIDTH = 512;
-        public static final int HEIGHT = 768;
+        public static final int DEFAULT_WIDTH = 512;
+        public static final int DEFAULT_HEIGHT = 768;
+
+        public static int WIDTH = DEFAULT_WIDTH;
+        public static int HEIGHT = DEFAULT_HEIGHT;
+
+        public static void setScreenSize(int width, int height) {
+            WIDTH = width;
+            HEIGHT = height;
+        }
     }
 
     /**
@@ -32,5 +40,19 @@ public class GameConfig {
     public static class Probability {
         public static final double ELITE_PROP_RATE = 0.6;
         public static final double SUPER_ELITE_PROP_RATE = 0.5;
+    }
+
+    /**
+     * 渲染配置
+     */
+    public static class Render {
+        public static final int FRAME_DELAY_MS = 16; // 约 60 FPS
+    }
+
+    /**
+     * 触摸控制配置
+     */
+    public static class Control {
+        public static final int HERO_TOUCH_MARGIN = 50;
     }
 }

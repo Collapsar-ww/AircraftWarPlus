@@ -2,6 +2,7 @@ package edu.hitsz.aircraft;
 
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.config.GameConfig;
 import edu.hitsz.observer.BombObserver;
 import edu.hitsz.strategy.ShootStrategy;
 
@@ -22,7 +23,7 @@ public class EliteEnemy extends AbstractAircraft implements BombObserver {
     public void forward() {
         super.forward();
         // 判定 y 轴向下飞行出界
-        if (locationY >= Main.WINDOW_HEIGHT) {
+        if (locationY >= GameConfig.Screen.HEIGHT) {
             vanish();
         }
     }

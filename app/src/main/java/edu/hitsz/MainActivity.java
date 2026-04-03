@@ -1,9 +1,11 @@
 package edu.hitsz;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import edu.hitsz.application.ImageManager;
@@ -14,14 +16,11 @@ import edu.hitsz.application.ImageManager;
  * 功能：
  * 1. 初始化图片资源
  * 2. 选择难度（简单 / 普通 / 困难）
- * 3. 启动游戏（Phase 2 中嵌入 GameView）
- *
- * Phase 2 TODO:
- * - 添加 GameView（SurfaceView）到布局
- * - 实现游戏 UI 叠层（HP 条、分数、暂停按钮）
- * - 接入排行榜 / 成就界面
+ * 3. 启动游戏
  */
 public class MainActivity extends Activity {
+
+    private RadioGroup rgDifficulty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +35,31 @@ public class MainActivity extends Activity {
 
         // 初始化图片资源（只需一次）
         ImageManager.init(getApplicationContext());
+
+        // 获取难度选择控件
+        rgDifficulty = findViewById(R.id.rgDifficulty);
     }
 
-    /** 由布局中 Button 的 android:onClick 触发 */
+    /** 由“开始游戏”按钮的 android:onClick 触发 */
     public void onStartGame(View view) {
-        // TODO Phase 2: 根据选中难度创建 Game，嵌入 GameView
-        Toast.makeText(this, "Phase 2 中将启动游戏！", Toast.LENGTH_SHORT).show();
+        String difficulty = "简单"; // 默认值
+
+        int checkedId = rgDifficulty.getCheckedRadioButtonId();
+
+        if (checkedId == R.id.rbEasy) {
+            difficulty = "简单";
+        } else if (checkedId == R.id.rbNormal) {
+            difficulty = "普通";
+        } else if (checkedId == R.id.rbHard) {
+            difficulty = "困难";
+        } else {
+            Toast.makeText(this, "未选择难度，默认进入简单模式", Toast.LENGTH_SHORT).show();
+        }
+
+        Toast.makeText(this, "已选择：" + difficulty + " 模式", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra("difficulty", difficulty);
+        startActivity(intent);
     }
 }

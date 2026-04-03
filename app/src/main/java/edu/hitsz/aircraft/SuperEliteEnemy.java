@@ -2,6 +2,7 @@ package edu.hitsz.aircraft;
 
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.config.GameConfig;
 import edu.hitsz.config.PropConfig;
 import edu.hitsz.observer.BombObserver;
 import edu.hitsz.strategy.ShootStrategy;
@@ -19,7 +20,7 @@ public class SuperEliteEnemy extends AbstractAircraft implements BombObserver {
     public void forward() {
         // 横向移动由 speedX 控制，碰到边界反向
         int nextX = locationX + speedX;
-        if (nextX <= 0 || nextX >= Main.WINDOW_WIDTH) {
+        if (nextX <= 0 || nextX >= GameConfig.Screen.WIDTH) {
             speedX = -speedX; // 反向
         }
         locationX += speedX;  // 更新横向位置
@@ -27,7 +28,7 @@ public class SuperEliteEnemy extends AbstractAircraft implements BombObserver {
         super.forward();
 
         // 判定 y 轴向下飞行出界
-        if (locationY >= Main.WINDOW_HEIGHT) {
+        if (locationY >= GameConfig.Screen.HEIGHT) {
             vanish();
         }
     }

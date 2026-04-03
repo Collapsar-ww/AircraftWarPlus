@@ -132,9 +132,12 @@ public abstract class Game {
     // =====================================================================
 
     private void initHero() {
+        int initX = GameConfig.Screen.WIDTH / 2;
+        int initY = (int) (GameConfig.Screen.HEIGHT * 0.8);
+
         heroAircraft = HeroAircraft.getInstance(
-                AircraftConfig.Hero.INIT_LOCATION_X,
-                AircraftConfig.Hero.INIT_LOCATION_Y,
+                initX,
+                initY,
                 AircraftConfig.Hero.SPEED_X,
                 AircraftConfig.Hero.SPEED_Y,
                 AircraftConfig.Hero.HP,
@@ -142,10 +145,11 @@ public abstract class Game {
                 AircraftConfig.Hero.POWER,
                 AircraftConfig.Hero.SHOOT_NUM
         );
+
         // 重置（应对多局游戏时单例复用）
         heroAircraft.reset(
-                AircraftConfig.Hero.INIT_LOCATION_X,
-                AircraftConfig.Hero.INIT_LOCATION_Y,
+                initX,
+                initY,
                 AircraftConfig.Hero.SPEED_X,
                 AircraftConfig.Hero.SPEED_Y,
                 AircraftConfig.Hero.HP,

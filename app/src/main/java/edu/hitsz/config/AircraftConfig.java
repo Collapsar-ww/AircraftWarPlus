@@ -3,8 +3,8 @@ package edu.hitsz.config;
 public class AircraftConfig {
 
     public static class Hero {
-        public static final int INIT_LOCATION_X = GameConfig.Screen.WIDTH / 2;
-        public static final int INIT_LOCATION_Y = GameConfig.Screen.HEIGHT - 120;
+        public static final int INIT_LOCATION_X = 0;
+        public static final int INIT_LOCATION_Y = 0;
 
         public static final int HP = 250;
         public static final int DIRECTION = -1;

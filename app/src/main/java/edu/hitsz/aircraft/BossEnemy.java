@@ -4,6 +4,7 @@ import edu.hitsz.application.ImageManager;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.config.AircraftConfig;
+import edu.hitsz.config.GameConfig;
 import edu.hitsz.observer.BombObserver;
 import edu.hitsz.strategy.ShootStrategy;
 
@@ -27,9 +28,9 @@ public class BossEnemy extends AbstractAircraft implements BombObserver {
             // 碰到左边界，向右移动
             locationX = 0;
             speedX = Math.abs(speedX);
-        } else if (nextX >= Main.WINDOW_WIDTH - bossWidth) {
+        } else if (nextX >= GameConfig.Screen.WIDTH - bossWidth) {
             // 碰到右边界，向左移动
-            locationX = Main.WINDOW_WIDTH - bossWidth;
+            locationX = GameConfig.Screen.WIDTH - bossWidth;
             speedX = -Math.abs(speedX);
         } else {
             // 正常移动

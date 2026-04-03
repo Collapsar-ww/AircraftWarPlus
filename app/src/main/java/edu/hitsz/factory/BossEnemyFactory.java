@@ -4,6 +4,7 @@ import edu.hitsz.aircraft.BossEnemy;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.config.AircraftConfig;
+import edu.hitsz.config.GameConfig;
 import edu.hitsz.strategy.RingShoot;
 import java.util.Random;
 
@@ -27,7 +28,7 @@ public class BossEnemyFactory implements EnemyFactory {
     @Override
     public AbstractAircraft createEnemy() {
         Random random = new Random();
-        int x = Main.WINDOW_WIDTH / 2;
+        int x = GameConfig.Screen.WIDTH / 2;
         int y = AircraftConfig.BossEnemy.SPAWN_Y;
 
         // 使用基础配置并应用难度调整

@@ -13,30 +13,28 @@ public class RingShoot implements ShootStrategy {
     @Override
     public List<BaseBullet> shoot(AbstractAircraft aircraft) {
         List<BaseBullet> res = new LinkedList<>();
+
         int x = aircraft.getLocationX();
         int y = aircraft.getLocationY();
         int power = aircraft.getPower();
 
-        int baseSpeed = (aircraft.getDirection() < 0) ?
-                BulletConfig.BaseBullet.HERO_SPEED_Y :
-                BulletConfig.BaseBullet.ENEMY_SPEED_Y;
+        int speed = (aircraft.getDirection() < 0)
+                ? Math.abs(BulletConfig.BaseBullet.HERO_SPEED_Y)
+                : Math.abs(BulletConfig.BaseBullet.ENEMY_SPEED_Y);
 
         int bulletCount = aircraft.getShootNum();
-
-        // 计算环射角度（360度均匀分布）
         double angleStep = 2 * Math.PI / bulletCount;
 
         for (int i = 0; i < bulletCount; i++) {
             double angle = i * angleStep;
-            int speedX = (int) (Math.cos(angle) * Math.abs(baseSpeed));
-            int speedY = (int) (Math.sin(angle) * baseSpeed);
 
-            BaseBullet bullet;
-            if (aircraft.getDirection() < 0) {
-                bullet = new HeroBullet(x, y, speedX, speedY, power);
-            } else {
-                bullet = new EnemyBullet(x, y, speedX, speedY, power);
-            }
+            int speedX = (int) Math.round(speed * Math.cos(angle));
+            int speedY = (int) Math.round(speed * Math.sin(angle));
+
+            BaseBullet bullet = (aircraft.getDirection() < 0)
+                    ? new HeroBullet(x, y, speedX, speedY, power)
+                    : new EnemyBullet(x, y, speedX, speedY, power);
+
             res.add(bullet);
         }
 
