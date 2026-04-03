@@ -1,6 +1,5 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.config.GameConfig;
 import edu.hitsz.config.PropConfig;

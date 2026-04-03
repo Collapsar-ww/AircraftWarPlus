@@ -21,6 +21,6 @@ public class SuperBulletProp extends AbstractProp {
         PropEffectManager.activateSuperBulletProp();
 
         // 播放道具生效音效
-        AudioManager.playOnce(AudioManager.PROP_ACTIVATE);
+        AudioManager.playGetSupply();
     }
 }

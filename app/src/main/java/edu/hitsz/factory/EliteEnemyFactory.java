@@ -2,7 +2,6 @@ package edu.hitsz.factory;
 
 import edu.hitsz.aircraft.EliteEnemy;
 import edu.hitsz.aircraft.AbstractAircraft;
-import edu.hitsz.application.Main;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.config.AircraftConfig;
 import edu.hitsz.config.GameConfig;

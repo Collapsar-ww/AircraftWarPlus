@@ -1,5 +1,7 @@
 package edu.hitsz.application;
 
+import android.content.Context;
+
 import edu.hitsz.achievement.AchievementManager;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.BossEnemy;
@@ -39,6 +41,9 @@ public abstract class Game {
     // ===== 游戏状态 =====
     public enum GameState { RUNNING, PAUSED, OVER }
     protected volatile GameState gameState = GameState.RUNNING;
+
+    // ===== Android 上下文（给音频系统用）=====
+    protected Context context;
 
     // ===== 时间（ms，每帧加 TIME_INTERVAL）=====
     protected int time = 0;
@@ -89,13 +94,12 @@ public abstract class Game {
     protected int    bossMaxProps;
 
     // ===== Boss 状态 =====
-    protected boolean bossAlive      = false;
-    protected int     bossAppearCount = 0;
+    protected boolean bossAlive = false;
+    protected int bossAppearCount = 0;
 
     // ===== 音频 =====
-    protected boolean     musicOn;
-    protected MusicThread bgmThread       = null;
-    protected boolean     bossMusicPlaying = false;
+    protected boolean musicOn;
+    protected boolean bossMusicPlaying = false;
 
     // ===== 屏幕震动（由 GameView 读取）=====
     protected int shakeRemaining = 0;
@@ -117,6 +121,14 @@ public abstract class Game {
         PropEffectManager.setHero(heroAircraft);
         achievementManager = AchievementManager.getInstance();
         achievementManager.startNewGame();
+    }
+
+    // =====================================================================
+    // 提供 Context（必须由 GameActivity 调用）
+    // =====================================================================
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     // =====================================================================
@@ -179,6 +191,10 @@ public abstract class Game {
         // 英雄射击
         if (time % heroShootCycle == 0) {
             heroBullets.addAll(heroAircraft.shoot());
+
+            if (musicOn && context != null) {
+                AudioManager.playBullet();
+            }
         }
 
         // 敌机射击
@@ -233,13 +249,21 @@ public abstract class Game {
     private void bulletHitEnemy() {
         for (BaseBullet bullet : heroBullets) {
             if (bullet.notValid()) continue;
+
             for (AbstractAircraft enemy : enemyAircrafts) {
                 if (enemy.notValid()) continue;
+
                 if (bullet.crash(enemy)) {
                     enemy.decreaseHp(bullet.getPower());
                     bullet.vanish();
+
+                    if (musicOn && context != null) {
+                        AudioManager.playBulletHit();
+                    }
+
                     if (enemy.notValid() && !(enemy instanceof BossEnemy)) {
                         enemyKills++;
+
                         if (enemy instanceof SuperEliteEnemy) {
                             score += AircraftConfig.SuperEliteEnemy.SCORE;
                         } else if (enemy instanceof EliteEnemy) {
@@ -247,6 +271,7 @@ public abstract class Game {
                         } else {
                             score += AircraftConfig.MobEnemy.SCORE;
                         }
+
                         dropProps(enemy);
                     }
                     break;
@@ -258,9 +283,14 @@ public abstract class Game {
     private void bulletHitHero() {
         for (BaseBullet bullet : enemyBullets) {
             if (bullet.notValid()) continue;
+
             if (bullet.crash(heroAircraft)) {
                 heroAircraft.decreaseHp(bullet.getPower());
                 bullet.vanish();
+
+                if (musicOn && context != null) {
+                    AudioManager.playBulletHit();
+                }
             }
         }
     }
@@ -268,9 +298,14 @@ public abstract class Game {
     private void propHitHero() {
         for (AbstractProp prop : props) {
             if (prop.notValid()) continue;
+
             if (prop.crash(heroAircraft)) {
                 prop.activate(heroAircraft);
                 prop.vanish();
+
+                if (musicOn && context != null) {
+                    AudioManager.playGetSupply();
+                }
             }
         }
     }
@@ -282,9 +317,16 @@ public abstract class Game {
                 bossKills++;
                 score += AircraftConfig.BossEnemy.SCORE;
                 dropProps(enemy);
+
+                // Boss 死亡时播放爆炸音效
+                if (musicOn && context != null) {
+                    AudioManager.playBombExplosion();
+                }
+
                 // 停止 Boss BGM，恢复普通 BGM
-                if (musicOn && bossMusicPlaying) {
-                    AudioManager.stopAudio("boss");
+                if (musicOn && context != null && bossMusicPlaying) {
+                    AudioManager.stopBossBgm();
+                    AudioManager.playBgm();
                     bossMusicPlaying = false;
                 }
             }
@@ -323,12 +365,16 @@ public abstract class Game {
         int x = source.getLocationX();
         int y = source.getLocationY();
         double r = random.nextDouble();
+
         double cum = bloodPropRate;
         if (r < cum) return new BloodPropFactory().createProp(x, y);
+
         cum += bulletPropRate;
         if (r < cum) return new BulletPropFactory().createProp(x, y);
+
         cum += superBulletPropRate;
         if (r < cum) return new SuperBulletPropFactory().createProp(x, y);
+
         return new BombPropFactory().createProp(x, y);
     }
 
@@ -389,7 +435,11 @@ public abstract class Game {
 
     protected void onGameOver() {
         PropEffectManager.shutdown();
-        AudioManager.stopAll();
+
+        if (musicOn && context != null) {
+            AudioManager.stopAll();
+            AudioManager.playGameOver();
+        }
     }
 
     // =====================================================================
@@ -408,11 +458,36 @@ public abstract class Game {
     public int                     getShakeIntensity() { return shakeIntensity; }
     public boolean                 isMusicOn()         { return musicOn; }
 
-    public void pause()  { gameState = GameState.PAUSED; }
-    public void resume() { if (gameState == GameState.PAUSED) gameState = GameState.RUNNING; }
+    public void pause() {
+        gameState = GameState.PAUSED;
+        if (musicOn) {
+            AudioManager.pauseAll();
+        }
+    }
+
+    public void resume() {
+        if (gameState == GameState.PAUSED) {
+            gameState = GameState.RUNNING;
+            if (musicOn) {
+                AudioManager.resumeAll();
+            }
+        }
+    }
 
     /** 触摸控制：将屏幕触点坐标传给英雄机 */
     public void setHeroLocation(double x, double y) {
         heroAircraft.setLocation(x, y);
+    }
+
+    // =====================================================================
+    // Boss 音乐控制（供子类在 Boss 生成时调用）
+    // =====================================================================
+
+    protected void startBossMusic() {
+        if (musicOn && context != null && !bossMusicPlaying) {
+            AudioManager.stopBgm();
+            AudioManager.playBossBgm();
+            bossMusicPlaying = true;
+        }
     }
 }

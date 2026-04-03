@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import edu.hitsz.application.AudioManager;
 import edu.hitsz.application.Game;
 import edu.hitsz.application.GameEasy;
 import edu.hitsz.application.GameHard;
 import edu.hitsz.application.GameNormal;
 import edu.hitsz.application.ImageManager;
-import edu.hitsz.application.Main;
 import edu.hitsz.config.GameConfig;
 
 /**
@@ -64,9 +64,16 @@ public class GameActivity extends Activity {
                 break;
         }
 
+        // 传入 context 给 Game（用于播放 BGM / Boss BGM）
+        game.setContext(this);
+
         // 创建并显示游戏画面
         gameView = new GameView(this, game);
         setContentView(gameView);
+
+        // 播放普通 BGM
+        AudioManager.playBgm();
+        System.out.println("播放BGM");
     }
 
     @Override
@@ -75,6 +82,7 @@ public class GameActivity extends Activity {
         if (game != null) {
             game.pause();
         }
+        AudioManager.pauseAllBgm();
     }
 
     @Override
@@ -83,5 +91,13 @@ public class GameActivity extends Activity {
         if (game != null) {
             game.resume();
         }
+        AudioManager.resumeBgm();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // ❌ 不要在这里 release
+        // AudioManager.release();
     }
 }

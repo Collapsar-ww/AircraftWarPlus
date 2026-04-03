@@ -21,6 +21,6 @@ public class BulletProp extends AbstractProp {
         PropEffectManager.activateBulletProp();
 
         // 播放道具生效音效
-        AudioManager.playOnce(AudioManager.PROP_ACTIVATE);
+        AudioManager.playGetSupply();
     }
 }

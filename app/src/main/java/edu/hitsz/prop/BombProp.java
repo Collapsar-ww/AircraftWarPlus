@@ -28,7 +28,7 @@ public class BombProp extends AbstractProp {
     public void activate(HeroAircraft heroAircraft) {
 
         // 播放炸弹爆炸音效
-        AudioManager.playOnce(AudioManager.BOMB_EXPLODE);
+        AudioManager.playBombExplosion();
         System.out.println("炸弹激活！清屏攻击");
         // 使用全局主题通知所有观察者
         globalBombSubject.bombActivated();

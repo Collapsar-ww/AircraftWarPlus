@@ -8,6 +8,7 @@ import android.view.WindowManager;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import edu.hitsz.application.AudioManager;
 import edu.hitsz.application.ImageManager;
 
 /**
@@ -36,11 +37,17 @@ public class MainActivity extends Activity {
         // 初始化图片资源（只需一次）
         ImageManager.init(getApplicationContext());
 
+        // 初始化音频资源（只需一次）
+        AudioManager.init(getApplicationContext());
+        System.out.println("AudioManager 初始化成功");
+
         // 获取难度选择控件
         rgDifficulty = findViewById(R.id.rgDifficulty);
     }
 
-    /** 由“开始游戏”按钮的 android:onClick 触发 */
+    /**
+     * 由“开始游戏”按钮的 android:onClick 触发
+     */
     public void onStartGame(View view) {
         String difficulty = "简单"; // 默认值
 
@@ -61,5 +68,14 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("difficulty", difficulty);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 如果整个应用真的退出，这里释放更合理
+        // 实验阶段也可以先保留不写，避免误释放
+        // AudioManager.release();
     }
 }

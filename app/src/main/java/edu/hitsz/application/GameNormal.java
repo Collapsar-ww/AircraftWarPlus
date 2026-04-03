@@ -126,15 +126,7 @@ public class GameNormal extends Game {
         nextBossScore = bossScoreThreshold + (bossAppearCount * bossScoreInterval);
         System.out.println("下一个BOSS将在分数 " + nextBossScore + " 时生成");
 
-        // 播放BOSS音乐
-        if (musicOn && !bossMusicPlaying) {
-            if (bgmThread != null && bgmThread.isPlaying()) {
-                bgmThread.stopMusic();
-            }
-            AudioManager.playAudio(AudioManager.BOSS_BGM, true, "boss");
-            bossMusicPlaying = true;
-            System.out.println("开始播放 BOSS 音乐");
-        }
+        startBossMusic();
     }
 
     @Override

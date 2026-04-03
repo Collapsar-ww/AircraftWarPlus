@@ -2,7 +2,6 @@ package edu.hitsz.factory;
 
 import edu.hitsz.aircraft.BossEnemy;
 import edu.hitsz.aircraft.AbstractAircraft;
-import edu.hitsz.application.Main;
 import edu.hitsz.config.AircraftConfig;
 import edu.hitsz.config.GameConfig;
 import edu.hitsz.strategy.RingShoot;

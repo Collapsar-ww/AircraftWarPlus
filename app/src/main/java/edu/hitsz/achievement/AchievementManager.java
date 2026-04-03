@@ -236,7 +236,7 @@ public class AchievementManager {
         activeNotifications.add(notification);
 
         // 播放音效
-        AudioManager.playOnce(AudioManager.PROP_ACTIVATE);
+        AudioManager.playGetSupply();
     }
 
     /**

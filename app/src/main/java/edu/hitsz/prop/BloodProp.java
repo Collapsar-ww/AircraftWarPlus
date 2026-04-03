@@ -25,6 +25,6 @@ public class BloodProp extends AbstractProp {
         System.out.println("血量恢复: +" + healAmount + " HP");
 
         // 播放道具生效音效
-        AudioManager.playOnce(AudioManager.PROP_ACTIVATE);
+        AudioManager.playGetSupply();
     }
 }
