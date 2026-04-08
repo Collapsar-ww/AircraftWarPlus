@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import edu.hitsz.application.AudioManager;
 import edu.hitsz.application.ImageManager;
+import edu.hitsz.rank.RankingManager;
 
 /**
  * 游戏入口 Activity
@@ -39,6 +40,9 @@ public class MainActivity extends Activity {
 
         // 初始化音频资源（只需一次）
         AudioManager.init(getApplicationContext());
+
+        // 初始化排行榜数据库（只需一次，使用沙箱存储）
+        RankingManager.init(getApplicationContext());
         System.out.println("AudioManager 初始化成功");
 
         // 获取难度选择控件

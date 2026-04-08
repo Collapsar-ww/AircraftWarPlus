@@ -36,7 +36,10 @@ AircraftWarPlus/
 │   └── src/main/
 │       ├── AndroidManifest.xml          # 声明 MainActivity，全屏主题
 │       ├── java/edu/hitsz/
-│       │   ├── MainActivity.java        # 入口 Activity，图片初始化 + 难度选择
+│       │   ├── MainActivity.java        # 入口 Activity，资源初始化 + 难度选择
+│       │   ├── GameActivity.java        # 游戏页面，持有主线程 Handler，游戏结束跳排行榜
+│       │   ├── GameView.java            # 自定义 View，每帧调用 game.update() 并绘制
+│       │   ├── LeaderboardActivity.java # 排行榜页面，展示 Top-10，支持逐条删除
 │       │   │
 │       │   ├── achievement/             # 成就系统
 │       │   │   ├── Achievement.java          抽象基类
@@ -104,10 +107,12 @@ AircraftWarPlus/
 │       │   │   └── SuperBulletProp.java      环射道具
 │       │   │
 │       │   ├── rank/                    # 排行榜
-│       │   │   ├── Score.java                分数 POJO
-│       │   │   ├── ScoreDao.java             DAO 接口
-│       │   │   ├── ScoreDaoImpl.java         文件实现（scores.txt）
-│       │   │   └── RankingManager.java       静态管理器（rank.dat 序列化）
+│       │   │   ├── Score.java                分数 POJO（含 SQLite 主键 id）
+│       │   │   ├── ScoreDao.java             DAO 接口（insert / findAll / delete）
+│       │   │   ├── ScoreDaoImpl.java         文件实现（Windows 平台，scores.txt）
+│       │   │   ├── ScoreDbHelper.java        SQLiteOpenHelper，管理 scores.db
+│       │   │   ├── ScoreDaoSQLite.java       SQLite 实现（Android 沙箱存储）
+│       │   │   └── RankingManager.java       静态管理器（init/addScore/deleteScore）
 │       │   │
 │       │   ├── strategy/                # 策略模式（射击策略）
 │       │   │   ├── ShootStrategy.java        策略接口
@@ -128,7 +133,9 @@ AircraftWarPlus/
 │           │   ├── bullet_hero.png / bullet_enemy.png          子弹
 │           │   └── prop_blood/bomb/bullet/bullet_plus.png       道具
 │           ├── layout/
-│           │   └── activity_main.xml    主菜单布局（难度选择 + 开始按钮）
+│           │   ├── activity_main.xml         主菜单布局（难度选择 + 开始按钮）
+│           │   ├── activity_leaderboard.xml  排行榜页面布局
+│           │   └── item_score.xml            排行榜列表单行布局
 │           └── values/
 │               ├── colors.xml / strings.xml / themes.xml
 │               └── ...
@@ -158,10 +165,68 @@ AircraftWarPlus/
 | 文件 | 说明 |
 |------|------|
 | `ImageManager` | 从 `res/drawable` 加载 `Bitmap`，维护类名→图片映射 |
-| `AudioManager` | 音效接口（Phase 2 实现：BGM 用 MediaPlayer，音效用 SoundPool） |
-| `MusicThread` | 存根，Phase 2 替换 |
-| `Main` | 屏幕尺寸常量兼容类，可运行时调用 `setSize()` 动态覆盖 |
-| `MainActivity` | 入口，初始化资源 + 难度选择 UI |
+| `AudioManager` | 音效：BGM 用 `MediaPlayer`，短音效用 `SoundPool` |
+| `MainActivity` | 入口，初始化资源（含 `RankingManager.init()`） + 难度选择 UI |
+| `GameActivity` | 创建 Game 实例，持有主线程 `Handler`，游戏结束后弹对话框并跳转排行榜 |
+| `GameView` | 自定义 `View`，`postInvalidateDelayed(16ms)` 驱动约 60 FPS 渲染 |
+| `LeaderboardActivity` | 排行榜页面：自定义 `ArrayAdapter` 渲染列表，支持逐条删除 |
+
+### 排行榜模块（DAO 模式 + SQLite）
+
+> 复用 Windows 版 DAO 接口，新增 Android SQLite 实现，适配沙箱存储。
+
+#### 架构
+
+```
+ScoreDao (接口)
+  ├── ScoreDaoImpl     — 文件实现（Windows 版保留，scores.txt）
+  └── ScoreDaoSQLite   — SQLite 实现（Android，scores.db 存于沙箱）
+        └── ScoreDbHelper (SQLiteOpenHelper)
+              数据库路径：data/data/[包名]/databases/scores.db
+```
+
+#### 关键类说明
+
+| 类 | 说明 |
+|----|------|
+| `ScoreDbHelper` | 继承 `SQLiteOpenHelper`，管理建表与升级；通过 `context.getApplicationContext()` 获取沙箱路径 |
+| `ScoreDaoSQLite` | 用 `ContentValues` 插入，`Cursor` 查询，按 score 降序返回；`saveToFile/loadFromFile` 为空操作（SQLite 自动持久化） |
+| `RankingManager` | 静态门面：`init(Context)` 初始化 DAO；`addScore()` 插入后自动裁剪至 Top-10；`deleteScore(Score)` 按数据库 id 删除 |
+
+#### 核心 API 一览
+
+```java
+// 初始化（MainActivity.onCreate 调用一次）
+RankingManager.init(getApplicationContext());
+
+// 插入一条记录（自动维持 Top-10）
+RankingManager.addScore("Player", 9800);
+
+// 获取所有记录（按分数降序）
+List<Score> scores = RankingManager.getAllScores();
+
+// 删除指定记录（按数据库 id）
+RankingManager.deleteScore(score);
+```
+
+### Handler 跨线程通信（游戏结束 → 排行榜跳转）
+
+> `GameView` 的 `onDraw()` 运行在主线程，但按实验要求采用 Handler 消息机制实现解耦。
+
+```
+game.onGameOver()
+    └── handler.sendMessage(MSG_GAME_OVER, finalScore)
+                ↓ 主线程
+    GameActivity.handleMessage()
+        └── showNameInputDialog(finalScore)
+                └── RankingManager.addScore(name, score)
+                └── startActivity(LeaderboardActivity)
+```
+
+1. `GameActivity.onCreate()` 在主线程创建 `Handler(Looper.getMainLooper())`
+2. 将 Handler 注入 `game.setHandler(handler)`
+3. `Game.onGameOver()` 调用 `handler.sendMessage()`，消息携带最终得分（`msg.arg1`）
+4. Handler 回调弹出 `AlertDialog` 输入玩家名，确认后保存并跳转排行榜
 
 ---
 
@@ -172,20 +237,13 @@ AircraftWarPlus/
 - 游戏逻辑层全部迁移（aircraft / bullet / prop / strategy / observer / factory / config）
 - `ImageManager` 改为 Android `Bitmap`
 - `Game.java` 基类（游戏主循环、碰撞检测、道具掉落）
-- `MainActivity` 入口 + 布局
+- `GameView`（自定义 View，`postInvalidateDelayed` 驱动渲染，触摸控制英雄机）
+- `GameActivity`（难度选择、Handler 注入、生命周期管理）
+- 音效系统（`MediaPlayer` BGM + `SoundPool` 短音效，含 Boss BGM 切换）
+- 屏幕震动效果
+- **排行榜页面**（SQLite 存储、展示 Top-10、逐条删除、Handler 跨线程跳转）
 - 图片资源已放入 `res/drawable/`
 - 编译错误全部修复
-
-### Phase 2 待实现
-
-| 模块 | 方案 |
-|------|------|
-| 渲染 | `GameView extends SurfaceView`，独立渲染线程，`Canvas.drawBitmap()` |
-| 触摸控制 | `View.OnTouchListener` 处理 `ACTION_MOVE`，坐标写入 `HeroAircraft` |
-| 音效 | `MediaPlayer`（BGM）+ `SoundPool`（短音效），文件放 `assets/` |
-| 数据持久化 | `RankingManager` / `AchievementManager` 改用 `Context.getFilesDir()` 路径或 Room 数据库 |
-| 分辨率适配 | 读取实际屏幕尺寸，调用 `Main.setSize()` 覆盖逻辑坐标 |
-| UI 界面 | 游戏内 HUD（HP / 分数）、排行榜、成就界面 |
 
 ---
 

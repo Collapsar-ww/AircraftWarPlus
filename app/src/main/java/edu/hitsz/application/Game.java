@@ -1,6 +1,8 @@
 package edu.hitsz.application;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 
 import edu.hitsz.achievement.AchievementManager;
 import edu.hitsz.aircraft.AbstractAircraft;
@@ -44,6 +46,11 @@ public abstract class Game {
 
     // ===== Android 上下文（给音频系统用）=====
     protected Context context;
+
+    // ===== Handler（由 GameActivity 在主线程创建后传入，用于游戏结束跳转）=====
+    /** 消息：游戏结束，arg1 = 最终得分 */
+    public static final int MSG_GAME_OVER = 1;
+    private Handler handler;
 
     // ===== 时间（ms，每帧加 TIME_INTERVAL）=====
     protected int time = 0;
@@ -129,6 +136,11 @@ public abstract class Game {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    /** 设置主线程 Handler，游戏结束时通知 UI 跳转排行榜 */
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 
     // =====================================================================
@@ -439,6 +451,14 @@ public abstract class Game {
         if (musicOn && context != null) {
             AudioManager.stopAll();
             AudioManager.playGameOver();
+        }
+
+        // 通知主线程：游戏结束，携带最终分数
+        if (handler != null) {
+            Message msg = Message.obtain();
+            msg.what = MSG_GAME_OVER;
+            msg.arg1 = score;
+            handler.sendMessage(msg);
         }
     }
 

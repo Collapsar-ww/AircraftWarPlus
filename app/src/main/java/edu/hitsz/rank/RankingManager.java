@@ -1,78 +1,55 @@
-// RankingManager.java
 package edu.hitsz.rank;
 
-import java.io.*;
+import android.content.Context;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+/**
+ * 排行榜管理器（Android 适配版）
+ *
+ * 使用方式：
+ *   1. 在 MainActivity / Application 中调用 RankingManager.init(context) 完成初始化
+ *   2. 之后直接调用静态方法操作排行榜
+ */
 public class RankingManager {
-    private static final String RANK_FILE = "rank.dat";
-    private static List<Score> scoreList = new ArrayList<>();
 
-    static {
-        loadScores();
+    private static final int MAX_RANK = 10;
+
+    private static ScoreDao dao;
+
+    /** 初始化（需在使用前调用一次，传入 ApplicationContext） */
+    public static void init(Context context) {
+        if (dao == null) {
+            dao = new ScoreDaoSQLite(context.getApplicationContext());
+        }
     }
 
-    // 添加得分记录
+    /** 添加得分记录，自动维持 Top-10 */
     public static void addScore(String playerName, int score) {
-        String time = new SimpleDateFormat("MM-dd HH:mm").format(new Date());
-        Score newScore = new Score(playerName, score, time);
-        scoreList.add(newScore);
+        if (dao == null) return;
+        String time = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()).format(new Date());
+        dao.insert(new Score(-1, playerName, score, time));
 
-        // 按分数排序（从高到低）
-        scoreList.sort((s1, s2) -> s2.getScore() - s1.getScore());
-
-        // 只保留前10名
-        if (scoreList.size() > 10) {
-            scoreList = scoreList.subList(0, 10);
+        // 保留前 10 名，删除多余记录
+        List<Score> all = dao.findAll(); // 已按分数降序
+        for (int i = MAX_RANK; i < all.size(); i++) {
+            dao.delete(all.get(i));
         }
-
-        saveScores();
     }
 
-    // 获取所有得分记录
+    /** 获取所有得分记录（按分数降序） */
     public static List<Score> getAllScores() {
-        return new ArrayList<>(scoreList);
+        if (dao == null) return new ArrayList<>();
+        return dao.findAll();
     }
 
-    // 删除指定位置的得分记录
-    public static void deleteScore(int index) {
-        if (index >= 0 && index < scoreList.size()) {
-            scoreList.remove(index);
-            saveScores();
-        }
-    }
-
-    // 保存到文件
-    private static void saveScores() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(RANK_FILE))) {
-            oos.writeObject(scoreList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 从文件加载
-    private static void loadScores() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(RANK_FILE))) {
-            scoreList = (List<Score>) ois.readObject();
-        } catch (FileNotFoundException e) {
-            // 文件不存在，第一次运行
-            scoreList = new ArrayList<>();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 打印排行榜（测试用）
-    public static void printRanking() {
-        System.out.println("=== 排行榜 ===");
-        for (int i = 0; i < scoreList.size(); i++) {
-            Score score = scoreList.get(i);
-            System.out.printf("%d. %s - %d分 (%s)%n",
-                    i + 1, score.getPlayerName(), score.getScore(), score.getTime());
-        }
+    /** 删除指定得分记录 */
+    public static void deleteScore(Score score) {
+        if (dao == null) return;
+        dao.delete(score);
     }
 }

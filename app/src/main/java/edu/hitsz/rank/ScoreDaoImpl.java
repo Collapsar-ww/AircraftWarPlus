@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 得分数据访问对象实现类
+ * 得分数据访问对象实现类（文件存储，Windows 平台使用）
  */
 public class ScoreDaoImpl implements ScoreDao {
     private List<Score> scores;
@@ -19,16 +19,22 @@ public class ScoreDaoImpl implements ScoreDao {
     @Override
     public void insert(Score score) {
         scores.add(score);
-        // 新增后重新按分数排序
         scores.sort((a, b) -> b.getScore() - a.getScore());
         saveToFile();
     }
 
     @Override
     public List<Score> findAll() {
-        // 按得分降序排序
         scores.sort((a, b) -> b.getScore() - a.getScore());
         return scores;
+    }
+
+    @Override
+    public void delete(Score score) {
+        scores.removeIf(s -> s.getPlayerName().equals(score.getPlayerName())
+                && s.getScore() == score.getScore()
+                && s.getTime().equals(score.getTime()));
+        saveToFile();
     }
 
     @Override
@@ -44,7 +50,7 @@ public class ScoreDaoImpl implements ScoreDao {
 
     @Override
     public void loadFromFile() {
-        scores.clear(); // 防止重复加载
+        scores.clear();
         File file = new File(FILE_NAME);
         if (!file.exists()) return;
 
@@ -56,7 +62,6 @@ public class ScoreDaoImpl implements ScoreDao {
                     String name = parts[0];
                     int score = Integer.parseInt(parts[1]);
                     String time = parts[2];
-                    // ✅ 使用带时间的构造函数
                     scores.add(new Score(name, score, time));
                 }
             }
