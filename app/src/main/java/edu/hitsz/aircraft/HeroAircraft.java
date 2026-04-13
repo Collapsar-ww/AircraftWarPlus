@@ -35,9 +35,11 @@ public class HeroAircraft extends AbstractAircraft {
         this.speedX = speedX;
         this.speedY = speedY;
         this.hp = hp;
+        this.maxHp = hp;
         this.direction = direction;
         this.power = power;
         this.shootNum = shootNum;
+        this.isValid = true; // 重置存活状态，避免新局第一帧直接触发游戏结束
         // 重置射击策略为直射
         this.shootStrategy = new edu.hitsz.strategy.StraightShoot();
     }
