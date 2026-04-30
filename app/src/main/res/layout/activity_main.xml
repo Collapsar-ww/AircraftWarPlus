@@ -62,6 +62,14 @@
         android:layout_height="56dp"
         android:text="开始游戏"
         android:textSize="18sp"
-        android:onClick="onStartGame" />
+        android:onClick="onStartGame"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="56dp"
+        android:text="联机对战"
+        android:textSize="18sp"
+        android:onClick="onOnlineGame" />
 
 </LinearLayout>

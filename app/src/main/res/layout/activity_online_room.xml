@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#111122"
+    android:padding="32dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="联机对战"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp" />
+
+    <EditText
+        android:id="@+id/etServerIp"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:hint="服务器 IP（如 192.168.1.100）"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
+        android:inputType="text"
+        android:background="#333355"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <EditText
+        android:id="@+id/etPlayerName"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:hint="你的昵称"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
+        android:inputType="text"
+        android:background="#333355"
+        android:padding="12dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnCreate"
+        android:layout_width="240dp"
+        android:layout_height="52dp"
+        android:text="创建房间"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp" />
+
+    <View
+        android:layout_width="240dp"
+        android:layout_height="1dp"
+        android:background="#444466"
+        android:layout_marginBottom="24dp" />
+
+    <EditText
+        android:id="@+id/etRoomId"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:hint="房间号（如 R001）"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
+        android:inputType="text"
+        android:background="#333355"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnJoin"
+        android:layout_width="240dp"
+        android:layout_height="52dp"
+        android:text="加入房间"
+        android:textSize="16sp"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:text="请输入服务器 IP 后创建或加入房间"
+        android:textColor="#AAAACC"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.4" />
+
+</LinearLayout>

@@ -143,6 +143,18 @@ public abstract class Game {
         this.handler = handler;
     }
 
+    // ===== 联机得分同步回调 =====
+
+    public interface ScoreChangedCallback {
+        void onScoreChanged(int newScore);
+    }
+
+    private ScoreChangedCallback scoreChangedCallback;
+
+    public void setScoreChangedCallback(ScoreChangedCallback cb) {
+        this.scoreChangedCallback = cb;
+    }
+
     // =====================================================================
     // 抽象方法（子类实现）
     // =====================================================================
@@ -283,6 +295,7 @@ public abstract class Game {
                         } else {
                             score += AircraftConfig.MobEnemy.SCORE;
                         }
+                        if (scoreChangedCallback != null) scoreChangedCallback.onScoreChanged(score);
 
                         dropProps(enemy);
                     }
@@ -328,6 +341,7 @@ public abstract class Game {
                 bossAlive = false;
                 bossKills++;
                 score += AircraftConfig.BossEnemy.SCORE;
+                if (scoreChangedCallback != null) scoreChangedCallback.onScoreChanged(score);
                 dropProps(enemy);
 
                 // Boss 死亡时播放爆炸音效

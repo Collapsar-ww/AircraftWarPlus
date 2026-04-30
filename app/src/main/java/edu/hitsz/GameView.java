@@ -37,6 +37,13 @@ public class GameView extends View {
     // 屏幕震动随机偏移
     private final Random random = new Random();
 
+    // 联机模式：对方实时分数（-1 表示单机模式，不显示）
+    private volatile int opponentScore = -1;
+
+    public void setOpponentScore(int score) {
+        opponentScore = score;
+    }
+
     public GameView(Context context, Game game) {
         super(context);
         this.game = game;
@@ -159,6 +166,11 @@ public class GameView extends View {
 
         // 分数
         canvas.drawText("Score: " + game.getScore(), 30, 60, paint);
+
+        // 联机模式：显示对方分数
+        if (opponentScore >= 0) {
+            canvas.drawText("对方: " + opponentScore, getWidth() - 280f, 60, paint);
+        }
 
         // 血量（如果没有 getHp() 这里会报错，后面告诉你怎么改）
         canvas.drawText("HP: " + hero.getHp(), 30, 120, paint);

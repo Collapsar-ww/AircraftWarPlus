@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import edu.hitsz.application.AudioManager;
 import edu.hitsz.application.ImageManager;
+import edu.hitsz.online.OnlineRoomActivity;
 import edu.hitsz.rank.RankingManager;
 
 /**
@@ -72,6 +73,13 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("difficulty", difficulty);
         startActivity(intent);
+    }
+
+    /**
+     * 由"联机对战"按钮的 android:onClick 触发
+     */
+    public void onOnlineGame(View view) {
+        startActivity(new Intent(this, OnlineRoomActivity.class));
     }
 
     @Override

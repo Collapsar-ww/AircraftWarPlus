@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AircraftWarPlus"
 include(":app")
- 
+include(":MyServer")
