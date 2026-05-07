@@ -67,6 +67,7 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
         game.setHandler(handler);
 
         // 注入得分同步回调
+        //当 onScoreChanged(score) 被调用时，执行 NetworkManager.getInstance().sendScore(score
         game.setScoreChangedCallback(score ->
                 NetworkManager.getInstance().sendScore(score));
 

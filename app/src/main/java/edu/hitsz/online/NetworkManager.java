@@ -55,10 +55,15 @@ public class NetworkManager {
     public void createRoom(String playerName, RoomCallback callback) {
         String url = "http://" + serverIp + ":" + HTTP_PORT + "/room/create";
         String body = "{\"playerName\":\"" + playerName + "\"}";
+        //创建OkHttp的请求体，指定Content-Type为JSON
         RequestBody rb = RequestBody.create(body, MediaType.get("application/json; charset=utf-8"));
+        //构建POST请求对象
         Request req = new Request.Builder().url(url).post(rb).build();
+        //异步发送请求
         httpClient.newCall(req).enqueue(new Callback() {
+            //这两段非阻塞，在子线程执行
             @Override public void onFailure(Call call, IOException e) {
+                //通过 mainHandler.post() 将错误信息切换到主线程回调给UI层
                 mainHandler.post(() -> callback.onError(e.getMessage()));
             }
             @Override public void onResponse(Call call, Response response) throws IOException {
@@ -107,6 +112,7 @@ public class NetworkManager {
     public void connectSocket(String roomId, String playerId) {
         new Thread(() -> {
             try {
+                //建立 TCP 连接
                 socket = new Socket(serverIp, SOCKET_PORT);
                 socketWriter = new PrintWriter(socket.getOutputStream(), true);
                 socketConnected = true;
@@ -124,7 +130,7 @@ public class NetworkManager {
                     socketConnected = false;
                     return;
                 }
-
+                //每5秒发送 PING 保持连接
                 startHeartbeat();
 
                 // 消息读取循环
@@ -167,6 +173,7 @@ public class NetworkManager {
     }
 
     private void startHeartbeat() {
+        //启动心跳线程（每5秒发送 PING 保持连接）
         Thread t = new Thread(() -> {
             while (socketConnected && socket != null && !socket.isClosed()) {
                 sendRaw("PING:");
@@ -182,6 +189,7 @@ public class NetworkManager {
 
     private void sendRaw(String msg) {
         if (socketWriter != null && socketConnected) {
+            //在子线程中执行 Socket 发送消息的操作
             socketWriteExecutor.execute(() -> socketWriter.println(msg));
         }
     }

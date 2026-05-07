@@ -86,17 +86,20 @@ public class OnlineRoomActivity extends Activity {
         String name = etPlayerNameCreate.getText().toString().trim();
         if (ip.isEmpty()) { Toast.makeText(this, "请输入服务器 IP", Toast.LENGTH_SHORT).show(); return; }
         if (name.isEmpty()) name = "Player1";
-
+        // 设置服务器ip
         NetworkManager.getInstance().setServerIp(ip);
         tvStatusCreate.setText("正在创建房间...");
         btnCreate.setEnabled(false);
 
         final String finalName = name;
+        //新New了一个RoomCallbback,作为参数传给createRoom,
+        //在createRoom中httpClient.newCall(req).enqueue(new Callback()这一步里面两段代码再进行调用
         NetworkManager.getInstance().createRoom(finalName, new NetworkManager.RoomCallback() {
             @Override public void onSuccess(String response) {
                 myRoomId   = NetworkManager.extractJson(response, "roomId");
                 myPlayerId = NetworkManager.extractJson(response, "playerId");
                 tvStatusCreate.setText("房间创建成功！\n房间号：" + myRoomId + "\n等待对方加入...");
+                //轮询,等待对方加入
                 startPolling();
             }
             @Override public void onError(String error) {
@@ -141,8 +144,10 @@ public class OnlineRoomActivity extends Activity {
     }
 
     private void schedulePoll() {
+        //通过 Handler 延迟执行
         pollHandler.postDelayed(() -> {
             if (!polling) return;
+            //发送 HTTP 请求查询房间状态
             NetworkManager.getInstance().pollRoomStatus(myRoomId, new NetworkManager.RoomCallback() {
                 @Override public void onSuccess(String response) {
                     String state = NetworkManager.extractJson(response, "state");

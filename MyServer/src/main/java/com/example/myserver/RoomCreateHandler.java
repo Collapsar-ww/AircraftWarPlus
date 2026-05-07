@@ -20,11 +20,12 @@ public class RoomCreateHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        //检查是否是POST方法
         if (!"POST".equals(exchange.getRequestMethod())) {
             sendResponse(exchange, 405, "{\"error\":\"Method Not Allowed\"}");
             return;
         }
-
+        //读取请求体
         InputStream is = exchange.getRequestBody();
         String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         String playerName = extractJson(body, "playerName");
