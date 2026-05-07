@@ -14,74 +14,191 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:layout_marginBottom="32dp" />
-
-    <EditText
-        android:id="@+id/etServerIp"
-        android:layout_width="280dp"
-        android:layout_height="wrap_content"
-        android:hint="服务器 IP（如 192.168.1.100）"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#888888"
-        android:inputType="text"
-        android:background="#333355"
-        android:padding="12dp"
         android:layout_marginBottom="12dp" />
 
-    <EditText
-        android:id="@+id/etPlayerName"
-        android:layout_width="280dp"
+    <!-- 难度选择（标题下方） -->
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="你的昵称"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#888888"
-        android:inputType="text"
-        android:background="#333355"
-        android:padding="12dp"
-        android:layout_marginBottom="24dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="36dp">
 
-    <Button
-        android:id="@+id/btnCreate"
-        android:layout_width="240dp"
-        android:layout_height="52dp"
-        android:text="创建房间"
-        android:textSize="16sp"
-        android:layout_marginBottom="24dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="难度："
+            android:textColor="#AAAACC"
+            android:textSize="15sp" />
 
-    <View
-        android:layout_width="240dp"
-        android:layout_height="1dp"
-        android:background="#444466"
-        android:layout_marginBottom="24dp" />
+        <Spinner
+            android:id="@+id/spinnerDifficulty"
+            android:layout_width="120dp"
+            android:layout_height="44dp"
+            android:background="#333355"
+            android:spinnerMode="dropdown" />
 
-    <EditText
-        android:id="@+id/etRoomId"
-        android:layout_width="280dp"
+    </LinearLayout>
+
+    <!-- 选择面板 -->
+    <LinearLayout
+        android:id="@+id/panelSelect"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="房间号（如 R001）"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#888888"
-        android:inputType="text"
-        android:background="#333355"
-        android:padding="12dp"
-        android:layout_marginBottom="12dp" />
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/btnJoin"
-        android:layout_width="240dp"
-        android:layout_height="52dp"
-        android:text="加入房间"
-        android:textSize="16sp"
-        android:layout_marginBottom="32dp" />
+        <Button
+            android:id="@+id/btnGoCreate"
+            android:layout_width="240dp"
+            android:layout_height="56dp"
+            android:text="创建游戏"
+            android:textSize="18sp"
+            android:layout_marginBottom="20dp" />
 
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="280dp"
+        <Button
+            android:id="@+id/btnGoJoin"
+            android:layout_width="240dp"
+            android:layout_height="56dp"
+            android:text="加入游戏"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <!-- 创建房间面板 -->
+    <LinearLayout
+        android:id="@+id/panelCreate"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请输入服务器 IP 后创建或加入房间"
-        android:textColor="#AAAACC"
-        android:textSize="14sp"
+        android:orientation="vertical"
         android:gravity="center"
-        android:lineSpacingMultiplier="1.4" />
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/etServerIpCreate"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:hint="服务器 IP（如 192.168.1.100）"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:inputType="text"
+            android:background="#333355"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etPlayerNameCreate"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:hint="你的昵称"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:inputType="text"
+            android:background="#333355"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp" />
+
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="240dp"
+            android:layout_height="52dp"
+            android:text="创建房间"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnBackFromCreate"
+            android:layout_width="240dp"
+            android:layout_height="44dp"
+            android:text="返回"
+            android:textSize="14sp"
+            android:backgroundTint="#444466"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/tvStatusCreate"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#AAAACC"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.4" />
+
+    </LinearLayout>
+
+    <!-- 加入房间面板 -->
+    <LinearLayout
+        android:id="@+id/panelJoin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/etServerIpJoin"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:hint="服务器 IP（如 192.168.1.100）"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:inputType="text"
+            android:background="#333355"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etPlayerNameJoin"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:hint="你的昵称"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:inputType="text"
+            android:background="#333355"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etRoomId"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:hint="房间号（如 R001）"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:inputType="text"
+            android:background="#333355"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp" />
+
+        <Button
+            android:id="@+id/btnJoin"
+            android:layout_width="240dp"
+            android:layout_height="52dp"
+            android:text="加入房间"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnBackFromJoin"
+            android:layout_width="240dp"
+            android:layout_height="44dp"
+            android:text="返回"
+            android:textSize="14sp"
+            android:backgroundTint="#444466"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/tvStatusJoin"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#AAAACC"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.4" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import java.util.List;
 public interface ScoreDao {
     void insert(Score score);
     List<Score> findAll();
+    List<Score> findByDifficulty(String difficulty);
     void delete(Score score);
     void saveToFile();
     void loadFromFile();

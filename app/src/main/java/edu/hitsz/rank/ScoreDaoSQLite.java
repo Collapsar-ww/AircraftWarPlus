@@ -27,28 +27,39 @@ public class ScoreDaoSQLite implements ScoreDao {
     public void insert(Score score) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(ScoreDbHelper.COL_NAME,  score.getPlayerName());
-        values.put(ScoreDbHelper.COL_SCORE, score.getScore());
-        values.put(ScoreDbHelper.COL_TIME,  score.getTime());
+        values.put(ScoreDbHelper.COL_NAME,       score.getPlayerName());
+        values.put(ScoreDbHelper.COL_SCORE,      score.getScore());
+        values.put(ScoreDbHelper.COL_TIME,       score.getTime());
+        values.put(ScoreDbHelper.COL_DIFFICULTY, score.getDifficulty());
         db.insert(ScoreDbHelper.TABLE_SCORES, null, values);
     }
 
     @Override
     public List<Score> findAll() {
+        return queryScores(null, null);
+    }
+
+    @Override
+    public List<Score> findByDifficulty(String difficulty) {
+        return queryScores(ScoreDbHelper.COL_DIFFICULTY + " = ?", new String[]{difficulty});
+    }
+
+    private List<Score> queryScores(String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         List<Score> result = new ArrayList<>();
 
         Cursor cursor = db.query(
                 ScoreDbHelper.TABLE_SCORES,
-                null, null, null, null, null,
+                null, selection, selectionArgs, null, null,
                 ScoreDbHelper.COL_SCORE + " DESC");
 
         while (cursor.moveToNext()) {
-            int    id    = cursor.getInt(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_ID));
-            String name  = cursor.getString(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_NAME));
-            int    score = cursor.getInt(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_SCORE));
-            String time  = cursor.getString(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_TIME));
-            result.add(new Score(id, name, score, time));
+            int    id         = cursor.getInt(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_ID));
+            String name       = cursor.getString(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_NAME));
+            int    score      = cursor.getInt(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_SCORE));
+            String time       = cursor.getString(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_TIME));
+            String difficulty = cursor.getString(cursor.getColumnIndexOrThrow(ScoreDbHelper.COL_DIFFICULTY));
+            result.add(new Score(id, name, score, time, difficulty));
         }
         cursor.close();
         return result;

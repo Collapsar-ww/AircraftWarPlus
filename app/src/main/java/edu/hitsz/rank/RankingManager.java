@@ -28,23 +28,23 @@ public class RankingManager {
         }
     }
 
-    /** 添加得分记录，自动维持 Top-10 */
-    public static void addScore(String playerName, int score) {
+    /** 添加得分记录，自动维持每个难度 Top-10 */
+    public static void addScore(String playerName, int score, String difficulty) {
         if (dao == null) return;
         String time = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()).format(new Date());
-        dao.insert(new Score(-1, playerName, score, time));
+        dao.insert(new Score(-1, playerName, score, time, difficulty));
 
-        // 保留前 10 名，删除多余记录
-        List<Score> all = dao.findAll(); // 已按分数降序
-        for (int i = MAX_RANK; i < all.size(); i++) {
-            dao.delete(all.get(i));
+        // 每个难度各保留前 10 名
+        List<Score> byDiff = dao.findByDifficulty(difficulty);
+        for (int i = MAX_RANK; i < byDiff.size(); i++) {
+            dao.delete(byDiff.get(i));
         }
     }
 
-    /** 获取所有得分记录（按分数降序） */
-    public static List<Score> getAllScores() {
+    /** 获取指定难度的得分记录（按分数降序） */
+    public static List<Score> getScoresByDifficulty(String difficulty) {
         if (dao == null) return new ArrayList<>();
-        return dao.findAll();
+        return dao.findByDifficulty(difficulty);
     }
 
     /** 删除指定得分记录 */

@@ -26,7 +26,17 @@ public class ScoreDaoImpl implements ScoreDao {
     @Override
     public List<Score> findAll() {
         scores.sort((a, b) -> b.getScore() - a.getScore());
-        return scores;
+        return new ArrayList<>(scores);
+    }
+
+    @Override
+    public List<Score> findByDifficulty(String difficulty) {
+        List<Score> result = new ArrayList<>();
+        for (Score s : scores) {
+            if (difficulty.equals(s.getDifficulty())) result.add(s);
+        }
+        result.sort((a, b) -> b.getScore() - a.getScore());
+        return result;
     }
 
     @Override
@@ -41,7 +51,7 @@ public class ScoreDaoImpl implements ScoreDao {
     public void saveToFile() {
         try (PrintWriter out = new PrintWriter(new FileWriter(FILE_NAME))) {
             for (Score s : scores) {
-                out.println(s.toString());
+                out.println(s.getPlayerName() + "," + s.getScore() + "," + s.getTime() + "," + s.getDifficulty());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,12 +67,9 @@ public class ScoreDaoImpl implements ScoreDao {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(", ");
-                if (parts.length == 3) {
-                    String name = parts[0];
-                    int score = Integer.parseInt(parts[1]);
-                    String time = parts[2];
-                    scores.add(new Score(name, score, time));
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    scores.add(new Score(parts[0], Integer.parseInt(parts[1]), parts[2], parts[3]));
                 }
             }
         } catch (IOException e) {

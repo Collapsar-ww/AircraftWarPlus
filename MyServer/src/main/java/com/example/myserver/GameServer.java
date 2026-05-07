@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 public class GameServer {
 
     public static final int HTTP_PORT = 8080;
-    public static final int SOCKET_PORT = 9090;
+    public static final int SOCKET_PORT = 9091;
 
     public static void main(String[] args) throws IOException {
         RoomManager roomManager = new RoomManager();

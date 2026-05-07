@@ -17,14 +17,56 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp" />
 
-    <TextView
+    <!-- 难度切换 -->
+    <RadioGroup
+        android:id="@+id/rgDifficulty"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
-        android:text="Top 10 历史最高分"
-        android:textColor="#AAAACC"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <RadioButton
+            android:id="@+id/rbEasy"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="简单"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#66CCFF"
+            android:paddingStart="4dp"
+            android:paddingEnd="12dp" />
+
+        <RadioButton
+            android:id="@+id/rbNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="普通"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#66CCFF"
+            android:paddingStart="4dp"
+            android:paddingEnd="12dp" />
+
+        <RadioButton
+            android:id="@+id/rbHard"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="困难"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#66CCFF"
+            android:paddingStart="4dp"
+            android:paddingEnd="12dp" />
+
+        <RadioButton
+            android:id="@+id/rbOnline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="联机"
+            android:textColor="#FFFFFF"
+            android:buttonTint="#66CCFF"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp" />
+
+    </RadioGroup>
 
     <!-- 表头 -->
     <LinearLayout

@@ -25,7 +25,7 @@ import okhttp3.Response;
 public class NetworkManager {
 
     private static final int HTTP_PORT = 8080;
-    private static final int SOCKET_PORT = 9090;
+    private static final int SOCKET_PORT = 9091;
 
     private static NetworkManager instance;
 

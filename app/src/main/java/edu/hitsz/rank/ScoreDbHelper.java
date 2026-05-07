@@ -13,13 +13,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class ScoreDbHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME    = "scores.db";
-    private static final int    DB_VERSION = 1;
+    private static final int    DB_VERSION = 2;
 
-    public static final String TABLE_SCORES = "scores";
-    public static final String COL_ID       = "_id";
-    public static final String COL_NAME     = "player_name";
-    public static final String COL_SCORE    = "score";
-    public static final String COL_TIME     = "time";
+    public static final String TABLE_SCORES  = "scores";
+    public static final String COL_ID        = "_id";
+    public static final String COL_NAME      = "player_name";
+    public static final String COL_SCORE     = "score";
+    public static final String COL_TIME      = "time";
+    public static final String COL_DIFFICULTY = "difficulty";
 
     public ScoreDbHelper(Context context) {
         // context.getApplicationContext() 确保不持有 Activity 引用
@@ -29,10 +30,11 @@ public class ScoreDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_SCORES + " ("
-                + COL_ID    + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL_NAME  + " TEXT NOT NULL, "
-                + COL_SCORE + " INTEGER NOT NULL, "
-                + COL_TIME  + " TEXT NOT NULL)");
+                + COL_ID         + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COL_NAME       + " TEXT NOT NULL, "
+                + COL_SCORE      + " INTEGER NOT NULL, "
+                + COL_TIME       + " TEXT NOT NULL, "
+                + COL_DIFFICULTY + " TEXT NOT NULL DEFAULT '简单')");
     }
 
     @Override

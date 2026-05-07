@@ -16,6 +16,8 @@ import edu.hitsz.LeaderboardActivity;
 import edu.hitsz.application.AudioManager;
 import edu.hitsz.application.Game;
 import edu.hitsz.application.GameEasy;
+import edu.hitsz.application.GameNormal;
+import edu.hitsz.application.GameHard;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.config.GameConfig;
 import edu.hitsz.rank.RankingManager;
@@ -52,9 +54,15 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
 
         roomId   = getIntent().getStringExtra("roomId");
         playerId = getIntent().getStringExtra("playerId");
+        String difficulty = getIntent().getStringExtra("difficulty");
+        if (difficulty == null) difficulty = "简单";
 
-        ImageManager.setBackgroundByDifficulty("简单");
-        game = new GameEasy(true);
+        ImageManager.setBackgroundByDifficulty(difficulty);
+        switch (difficulty) {
+            case "普通": game = new GameNormal(true); break;
+            case "困难": game = new GameHard(true);  break;
+            default:     game = new GameEasy(true);  break;
+        }
         game.setContext(this);
         game.setHandler(handler);
 
@@ -115,8 +123,10 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("保存并查看排行榜", (d, w) -> {
-                    RankingManager.addScore("联机玩家-" + playerId, myScore);
-                    startActivity(new Intent(this, LeaderboardActivity.class));
+                    RankingManager.addScore("联机玩家-" + playerId, myScore, "联机");
+                    Intent leaderIntent = new Intent(this, LeaderboardActivity.class);
+                    leaderIntent.putExtra("difficulty", "联机");
+                    startActivity(leaderIntent);
                     finish();
                 })
                 .setNegativeButton("直接退出", (d, w) -> finish())

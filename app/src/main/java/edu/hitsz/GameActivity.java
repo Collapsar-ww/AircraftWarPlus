@@ -32,6 +32,7 @@ public class GameActivity extends Activity {
 
     private Game game;
     private GameView gameView;
+    private String difficulty;
 
     /**
      * 主线程 Handler：接收子线程/GameView 发来的游戏结束消息
@@ -60,7 +61,7 @@ public class GameActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         GameConfig.Screen.setScreenSize(dm.widthPixels, dm.heightPixels);
 
-        String difficulty = getIntent().getStringExtra("difficulty");
+        difficulty = getIntent().getStringExtra("difficulty");
         if (difficulty == null) difficulty = "简单";
 
         ImageManager.setBackgroundByDifficulty(difficulty);
@@ -104,7 +105,7 @@ public class GameActivity extends Activity {
                 .setPositiveButton("保存并查看排行榜", (dialog, which) -> {
                     String name = input.getText().toString().trim();
                     if (name.isEmpty()) name = "Player";
-                    RankingManager.addScore(name, finalScore);
+                    RankingManager.addScore(name, finalScore, difficulty);
                     startLeaderboard();
                 })
                 .setNegativeButton("不保存，直接查看", (dialog, which) -> startLeaderboard())
@@ -113,6 +114,7 @@ public class GameActivity extends Activity {
 
     private void startLeaderboard() {
         Intent intent = new Intent(this, LeaderboardActivity.class);
+        intent.putExtra("difficulty", difficulty);
         startActivity(intent);
         finish();
     }

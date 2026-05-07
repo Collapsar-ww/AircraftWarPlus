@@ -12,6 +12,8 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.List;
@@ -31,6 +33,7 @@ public class LeaderboardActivity extends Activity {
 
     private ListView lvScores;
     private ScoreAdapter adapter;
+    private String currentDifficulty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +45,37 @@ public class LeaderboardActivity extends Activity {
 
         setContentView(R.layout.activity_leaderboard);
 
+        currentDifficulty = getIntent().getStringExtra("difficulty");
+        if (currentDifficulty == null) currentDifficulty = "简单";
+
         lvScores = findViewById(R.id.lvScores);
+
+        RadioGroup rgDifficulty = findViewById(R.id.rgDifficulty);
+        selectRadioForDifficulty(rgDifficulty, currentDifficulty);
+
+        rgDifficulty.setOnCheckedChangeListener((group, checkedId) -> {
+            if      (checkedId == R.id.rbEasy)   currentDifficulty = "简单";
+            else if (checkedId == R.id.rbNormal) currentDifficulty = "普通";
+            else if (checkedId == R.id.rbHard)   currentDifficulty = "困难";
+            else if (checkedId == R.id.rbOnline) currentDifficulty = "联机";
+            refreshList();
+        });
+
         refreshList();
     }
 
-    /** 刷新列表（每次删除后调用） */
+    private void selectRadioForDifficulty(RadioGroup rg, String difficulty) {
+        switch (difficulty) {
+            case "普通": ((RadioButton) rg.findViewById(R.id.rbNormal)).setChecked(true); break;
+            case "困难": ((RadioButton) rg.findViewById(R.id.rbHard)).setChecked(true);   break;
+            case "联机": ((RadioButton) rg.findViewById(R.id.rbOnline)).setChecked(true); break;
+            default:    ((RadioButton) rg.findViewById(R.id.rbEasy)).setChecked(true);   break;
+        }
+    }
+
+    /** 刷新列表（切换难度或删除后调用） */
     private void refreshList() {
-        List<Score> scores = RankingManager.getAllScores();
+        List<Score> scores = RankingManager.getScoresByDifficulty(currentDifficulty);
         adapter = new ScoreAdapter(this, scores);
         lvScores.setAdapter(adapter);
     }
