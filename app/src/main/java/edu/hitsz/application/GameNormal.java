@@ -7,6 +7,7 @@ import edu.hitsz.factory.BossEnemyFactory;
 import edu.hitsz.factory.EliteEnemyFactory;
 import edu.hitsz.factory.EnemyFactory;
 import edu.hitsz.factory.MobEnemyFactory;
+import edu.hitsz.factory.SuperEliteEnemyFactory;
 
 import java.util.Random;
 
@@ -32,7 +33,7 @@ public class GameNormal extends Game {
 
         this.hasBoss = DifficultyConfig.Normal.HAS_BOSS;
         this.bossScoreThreshold = DifficultyConfig.Normal.BOSS_SCORE_THRESHOLD;
-        this.bossScoreInterval = DifficultyConfig.Normal.BOSS_SCORE_INTERVAL;
+        this.bossScoreInterval = DifficultyConfig.Normal.BOSS_SCORE_INTERVAL;  // 新增
         this.bossHpIncreases = false;
         this.nextBossScore = bossScoreThreshold;
 
@@ -59,47 +60,33 @@ public class GameNormal extends Game {
 
     @Override
     protected void generateEnemies() {
-        // 普通难度敌机生成逻辑 - 标准配置
         if (enemyAircrafts.size() < maxEnemyCount) {
             Random random = new Random();
             EnemyFactory enemyFactory;
 
-            if (random.nextDouble() < eliteEnemyProb) {
-                enemyFactory = new EliteEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
+            double actualEliteProb = eliteEnemyProb;
+
+            if (random.nextDouble() < DifficultyConfig.Normal.SUPER_ELITE_RATIO) {
+                double rand = random.nextDouble();
+                if (rand < 0.30) {  // 普通难度超级精英概率30%
+                    enemyFactory = new SuperEliteEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
+                } else {
+                    enemyFactory = new EliteEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
+                }
             } else {
                 enemyFactory = new MobEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
             }
 
             AbstractAircraft newEnemy = enemyFactory.createEnemy();
             enemyAircrafts.add(newEnemy);
-
-            // 确保所有敌机都注册到炸弹系统
             registerNewObjectToBombs(newEnemy);
         }
     }
 
     @Override
     protected void checkBossGeneration() {
-        // 普通难度Boss生成逻辑
-        if (!hasBoss || score < nextBossScore || bossAlive) {
-            return;
-        }
-
-        // 检查是否已经有Boss存在
-        boolean bossExists = false;
-        for (AbstractAircraft enemy : enemyAircrafts) {
-            if (enemy instanceof BossEnemy) {
-                bossExists = true;
-                break;
-            }
-        }
-
-        if (bossExists) {
-            bossAlive = true;
-            return;
-        }
-
-        // 生成Boss
+        if (!hasBoss || bossAlive) return;
+        if (score < nextBossScore) return;
         generateBoss();
     }
 
@@ -115,15 +102,14 @@ public class GameNormal extends Game {
         bossAppearCount++;
 
         registerNewObjectToBombs(newBoss);
-        screenShake(2500, 8);
+        screenShake(2000, 8);
         System.out.println("Boss出现！屏幕震动");
 
         System.out.println("普通难度BOSS生成 - 出现次数: " + bossAppearCount +
-                ", 当前分数: " + score +
-                ", 血量倍数: " + hpMultiplier);
+                ", 当前分数: " + score);
 
-        // 设置下一个Boss生成分数阈值
-        nextBossScore = bossScoreThreshold + (bossAppearCount * bossScoreInterval);
+        // 修复：下一个Boss在当前分数 + 间隔分数时出现
+        nextBossScore = score + bossScoreInterval;
         System.out.println("下一个BOSS将在分数 " + nextBossScore + " 时生成");
 
         startBossMusic();
@@ -132,17 +118,17 @@ public class GameNormal extends Game {
     @Override
     protected void increaseDifficultyOverTime() {
         // 普通难度随时间适度增加难度 - 减缓增长速度
-        hpMultiplier += 0.03;          // 从0.05降到0.03
-        speedMultiplier += 0.02;       // 从0.03降到0.02
-        eliteEnemyProb = Math.min(eliteEnemyProb + 0.015, 0.4); // 从0.02降到0.015，上限0.4
+        hpMultiplier += 0.03;
+        speedMultiplier += 0.02;
+        eliteEnemyProb = Math.min(eliteEnemyProb + 0.015, 0.4);
 
         System.out.println("普通难度提升！HP倍数: " + String.format("%.2f", hpMultiplier) +
                 ", 速度倍数: " + String.format("%.2f", speedMultiplier) +
                 ", 精英概率: " + String.format("%.2f", eliteEnemyProb));
 
-        // 额外增加敌机生成频率 - 减缓增长速度
-        if (time % 3000 == 0) {        // 从2000增加到3000
-            enemyGenerateCycle = Math.max(enemyGenerateCycle - 15, 400); // 从-20降到-15，下限400
+        // 额外增加敌机生成频率
+        if (time % 3000 == 0) {
+            enemyGenerateCycle = Math.max(enemyGenerateCycle - 15, 400);
             System.out.println("普通难度提升！敌机生成周期: " + enemyGenerateCycle);
         }
     }

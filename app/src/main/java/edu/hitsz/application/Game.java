@@ -240,6 +240,7 @@ public abstract class Game {
         bulletHitHero();
         propHitHero();
         checkBossDefeated();
+        checkHeroEnemyCollision();
 
         // 清理已失效的对象
         cleanInvalid();
@@ -355,6 +356,28 @@ public abstract class Game {
                     AudioManager.playBgm();
                     bossMusicPlaying = false;
                 }
+            }
+        }
+    }
+
+    /**
+     * 英雄机与敌机碰撞检测
+     */
+    private void checkHeroEnemyCollision() {
+        for (AbstractAircraft enemy : enemyAircrafts) {
+            if (enemy.notValid()) continue;
+
+            if (heroAircraft.crash(enemy)) {
+                // 英雄机扣血
+                heroAircraft.decreaseHp(500);  // 碰撞伤害足够大，直接撞死
+                enemy.vanish();  // 敌机也消失
+
+                if (musicOn && context != null) {
+                    AudioManager.playBulletHit();  // 播放碰撞音效
+                }
+
+                // 每撞一个敌机只扣一次血，然后退出循环（防止一帧内撞多个多次扣血）
+                break;
             }
         }
     }

@@ -7,6 +7,7 @@ import edu.hitsz.factory.BossEnemyFactory;
 import edu.hitsz.factory.EliteEnemyFactory;
 import edu.hitsz.factory.EnemyFactory;
 import edu.hitsz.factory.MobEnemyFactory;
+import edu.hitsz.factory.SuperEliteEnemyFactory;
 
 import java.util.Random;
 
@@ -32,7 +33,6 @@ public class GameHard extends Game {
 
         this.hasBoss = DifficultyConfig.Hard.HAS_BOSS;
         this.bossScoreThreshold = DifficultyConfig.Hard.BOSS_SCORE_THRESHOLD;
-        this.bossScoreInterval = DifficultyConfig.Hard.BOSS_SCORE_INTERVAL;
         this.bossHpIncreases = DifficultyConfig.Hard.BOSS_HP_INCREASES;
         this.bossHpIncreaseFactor = DifficultyConfig.Hard.BOSS_HP_INCREASE_FACTOR;
         this.nextBossScore = bossScoreThreshold;
@@ -65,11 +65,19 @@ public class GameHard extends Game {
             Random random = new Random();
             EnemyFactory enemyFactory;
 
-            // 困难难度精英敌机概率更高
-            double actualEliteProb = eliteEnemyProb + (time / 10000.0) * 0.1; // 随时间增加精英概率
-            if (random.nextDouble() < actualEliteProb) {
-                enemyFactory = new EliteEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
+            // 困难难度精英敌机概率更高（随时间增加）
+            double actualEliteProb = eliteEnemyProb + (time / 10000.0) * 0.1;
+
+            if (random.nextDouble() < DifficultyConfig.Hard.SUPER_ELITE_RATIO){
+                // 生成精英类敌机（Elite 或 SuperElite）
+                double rand = random.nextDouble();
+                if (rand < 0.35) {  // 35%概率生成超级精英
+                    enemyFactory = new SuperEliteEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
+                } else {  // 65%概率生成普通精英
+                    enemyFactory = new EliteEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
+                }
             } else {
+                // 生成普通敌机
                 enemyFactory = new MobEnemyFactory(hpMultiplier, speedMultiplier, powerMultiplier);
             }
 
@@ -87,26 +95,8 @@ public class GameHard extends Game {
 
     @Override
     protected void checkBossGeneration() {
-        // 困难难度Boss生成逻辑
-        if (!hasBoss || score < nextBossScore || bossAlive) {
-            return;
-        }
-
-        // 检查是否已经有Boss存在
-        boolean bossExists = false;
-        for (AbstractAircraft enemy : enemyAircrafts) {
-            if (enemy instanceof BossEnemy) {
-                bossExists = true;
-                break;
-            }
-        }
-
-        if (bossExists) {
-            bossAlive = true;
-            return;
-        }
-
-        // 生成Boss
+        if (!hasBoss || bossAlive) return;
+        if (score < nextBossScore) return;
         generateBoss();
     }
 
@@ -128,14 +118,14 @@ public class GameHard extends Game {
 
         // 注册Boss到炸弹系统
         registerNewObjectToBombs(newBoss);
-        screenShake(3000, 10);
+        screenShake(2000, 10);
         System.out.println("Boss出现！强烈屏幕震动");
         System.out.println("困难难度BOSS生成 - 出现次数: " + bossAppearCount +
                 ", 当前分数: " + score +
                 ", 血量倍数: " + bossHpMultiplier);
 
         // 设置下一个Boss生成分数阈值
-        nextBossScore = bossScoreThreshold + (bossAppearCount * bossScoreInterval);
+        nextBossScore = score + bossScoreInterval;
         System.out.println("下一个BOSS将在分数 " + nextBossScore + " 时生成");
 
         // 播放BOSS音乐
@@ -144,19 +134,23 @@ public class GameHard extends Game {
 
     @Override
     protected void increaseDifficultyOverTime() {
-        // 困难难度随时间大幅增加难度
+        // 调用父类基础难度增长
         super.increaseDifficultyOverTime();
 
-        // 额外大幅提升
-        if (time % 800 == 0) {
-            maxEnemyCount = Math.min(maxEnemyCount + 1, 10); // 最大敌机数量增加
-            enemyGenerateCycle = Math.max(enemyGenerateCycle - 15, 200); // 生成周期缩短
-            System.out.println("困难难度大幅提升！最大敌机数: " + maxEnemyCount +
+        // 每3秒才增长一次
+        if (time % 3000 == 0) {
+            // 最大敌机数量增加变慢
+            maxEnemyCount = Math.min(maxEnemyCount + 1, 10);
+
+            // 生成周期缩短变慢
+            enemyGenerateCycle = Math.max(enemyGenerateCycle - 5, 200);
+
+            System.out.println("困难难度难度提升！最大敌机数: " + maxEnemyCount +
                     ", 生成周期: " + enemyGenerateCycle);
         }
 
-        // 每2分钟重置一次难度增长（防止无限增长）
-        if (time % 120000 == 0) {
+        // 每3分钟阶段性提示（原120秒改为180秒）
+        if (time % 180000 == 0) {
             System.out.println("困难难度阶段性重置，保持挑战性");
         }
     }

@@ -30,7 +30,6 @@ public class GameEasy extends Game {
 
         this.hasBoss = DifficultyConfig.Easy.HAS_BOSS;
         this.bossScoreThreshold = DifficultyConfig.Easy.BOSS_SCORE_THRESHOLD;
-        this.bossScoreInterval = DifficultyConfig.Easy.BOSS_SCORE_INTERVAL;
         this.bossHpIncreases = false;
         this.nextBossScore = bossScoreThreshold;
 
