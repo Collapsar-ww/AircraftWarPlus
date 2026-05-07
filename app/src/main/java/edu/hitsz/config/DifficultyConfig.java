@@ -6,123 +6,168 @@ package edu.hitsz.config;
 public class DifficultyConfig {
 
     public static class Easy {
-        // 属性调整因子
-        public static final double HP_MULTIPLIER = 0.7;      // 从0.8降到0.7
-        public static final double SPEED_MULTIPLIER = 0.7;   // 从0.8降到0.7
-        public static final double POWER_MULTIPLIER = 0.7;   // 从0.8降到0.7
+        // 敌机血量倍数（相对于基础值）
+        public static final double HP_MULTIPLIER = 1.0;
+        // 敌机速度倍数（相对于基础值）
+        public static final double SPEED_MULTIPLIER = 1.0;
+        // 敌机攻击力倍数（相对于基础值）
+        public static final double POWER_MULTIPLIER = 1.0;
 
-        // 生成配置
+        // 同屏最大敌机数量
         public static final int MAX_ENEMY_COUNT = 4;
-        public static final double ELITE_ENEMY_PROB = 0.15;  // 从0.2降到0.15
-        public static final int ENEMY_GENERATE_CYCLE = 900;  // 从800增加到900（生成更慢）
+        // 精英敌机出现概率（0~1之间）
+        public static final double ELITE_ENEMY_PROB = 0.15;
+        // 敌机生成周期（毫秒，数值越小生成越快）
+        public static final int ENEMY_GENERATE_CYCLE = 900;
 
-        // 射击配置
-        public static final int HERO_SHOOT_CYCLE = 600;      // 从500增加到600（射击更慢）
-        public static final int ENEMY_SHOOT_CYCLE = 1200;    // 从1000增加到1200（敌机射击更慢）
+        // 英雄机射击周期（毫秒，数值越小射击越快）
+        public static final int HERO_SHOOT_CYCLE = 600;
+        // 敌机射击周期（毫秒，数值越小射击越快）
+        public static final int ENEMY_SHOOT_CYCLE = 1200;
 
-        // Boss配置
-        public static final boolean HAS_BOSS = false;
-        public static final int BOSS_SCORE_THRESHOLD = Integer.MAX_VALUE;
-        public static final int BOSS_SCORE_INTERVAL = 0;
+        // 是否存在Boss敌机
+        public static final boolean HAS_BOSS = true;
+        // Boss出现所需分数阈值
+        public static final int BOSS_SCORE_THRESHOLD = 800;
 
-        // 难度增长
+        // 是否开启随时间难度增长
         public static final boolean INCREASE_DIFFICULTY = false;
+        // 难度增长间隔（毫秒）
         public static final int DIFFICULTY_INCREASE_INTERVAL = 0;
 
-        // 道具掉落配置 - 简单难度（更友好）
-        public static final double ELITE_PROP_RATE = 0.8;           // 从0.7增加到0.8
-        public static final double SUPER_ELITE_PROP_RATE = 0.6;     // 从0.5增加到0.6
+        // 精英敌机道具掉落概率（0~1之间）
+        public static final double ELITE_PROP_RATE = 0.40;
+        // 超级精英敌机道具掉落概率（0~1之间）
+        public static final double SUPER_ELITE_PROP_RATE = 0.35;
+        // 超级精英敌机掉落道具数量下限
         public static final int SUPER_ELITE_MIN_PROPS = 1;
+        // 超级精英敌机掉落道具数量上限
         public static final int SUPER_ELITE_MAX_PROPS = 2;
-        public static final int BOSS_MIN_PROPS = 1;
-        public static final int BOSS_MAX_PROPS = 2;
+        // Boss掉落道具数量下限
+        public static final int BOSS_MIN_PROPS = 2;
+        // Boss掉落道具数量上限
+        public static final int BOSS_MAX_PROPS = 3;
 
-        // 道具类型概率（简单难度：血量道具更多）
-        public static final double BLOOD_PROP_RATE = 0.35;          // 从0.25增加到0.35
-        public static final double BULLET_PROP_RATE = 0.30;         // 从0.35降到0.30
-        public static final double SUPER_BULLET_PROP_RATE = 0.20;   // 从0.25降到0.20
-        public static final double BOMB_PROP_RATE = 0.15;           // 保持15%
+        // 血量道具出现概率（0~1之间）
+        public static final double BLOOD_PROP_RATE = 0.20;
+        // 普通子弹道具出现概率（0~1之间）
+        public static final double BULLET_PROP_RATE = 0.35;
+        // 超级子弹道具出现概率（0~1之间）
+        public static final double SUPER_BULLET_PROP_RATE = 0.25;
+        // 炸弹道具出现概率（0~1之间）
+        public static final double BOMB_PROP_RATE = 0.20;
     }
 
     public static class Normal {
-        // 属性调整因子 - 中等难度
-        public static final double HP_MULTIPLIER = 0.9;           // 保持0.9
-        public static final double SPEED_MULTIPLIER = 0.9;        // 从0.8增加到0.9
-        public static final double POWER_MULTIPLIER = 0.9;        // 保持0.9
+        // 敌机血量倍数（相对于基础值）
+        public static final double HP_MULTIPLIER = 1.2;
+        // 敌机速度倍数（相对于基础值）
+        public static final double SPEED_MULTIPLIER = 1.2;
+        // 敌机攻击力倍数（相对于基础值）
+        public static final double POWER_MULTIPLIER = 1.2;
 
-        // 生成配置 - 适中数量
-        public static final int MAX_ENEMY_COUNT = 5;              // 从4增加到5
-        public static final double ELITE_ENEMY_PROB = 0.25;       // 保持0.25
-        public static final int ENEMY_GENERATE_CYCLE = 700;       // 保持700
+        // 同屏最大敌机数量
+        public static final int MAX_ENEMY_COUNT = 5;
+        // 精英敌机出现概率（0~1之间）
+        public static final double ELITE_ENEMY_PROB = 0.25;
+        public static final double SUPER_ELITE_RATIO = 0.15;
+        // 敌机生成周期（毫秒，数值越小生成越快）
+        public static final int ENEMY_GENERATE_CYCLE = 500;
 
-        // 射击配置 - 适中频率
-        public static final int HERO_SHOOT_CYCLE = 400;           // 从350增加到400
-        public static final int ENEMY_SHOOT_CYCLE = 900;          // 从1000降到900
+        // 英雄机射击周期（毫秒，数值越小射击越快）
+        public static final int HERO_SHOOT_CYCLE = 500;
+        // 敌机射击周期（毫秒，数值越小射击越快）
+        public static final int ENEMY_SHOOT_CYCLE = 1000;
 
-        // Boss配置 - 适中难度
+        // 是否存在Boss敌机
         public static final boolean HAS_BOSS = true;
-        public static final int BOSS_SCORE_THRESHOLD = 500;       // 从400增加到500
-        public static final int BOSS_SCORE_INTERVAL = 700;        // 从600增加到700
-
-        // 难度增长 - 缓慢增长
+        // Boss出现所需分数阈值
+        public static final int BOSS_SCORE_THRESHOLD = 400;
+        public static final int BOSS_SCORE_INTERVAL = 400;
+        // 是否开启随时间难度增长
         public static final boolean INCREASE_DIFFICULTY = true;
-        public static final int DIFFICULTY_INCREASE_INTERVAL = 2000; // 从1500增加到2000
+        // 难度增长间隔（毫秒）
+        public static final int DIFFICULTY_INCREASE_INTERVAL = 5000;
 
-        // 道具掉落配置 - 普通难度（平衡）
-        public static final double ELITE_PROP_RATE = 0.65;        // 保持0.65
-        public static final double SUPER_ELITE_PROP_RATE = 0.45;  // 保持0.45
+        // 精英敌机道具掉落概率（0~1之间）
+        public static final double ELITE_PROP_RATE = 0.35;
+        // 超级精英敌机道具掉落概率（0~1之间）
+        public static final double SUPER_ELITE_PROP_RATE = 0.30;
+        // 超级精英敌机掉落道具数量下限
         public static final int SUPER_ELITE_MIN_PROPS = 2;
+        // 超级精英敌机掉落道具数量上限
         public static final int SUPER_ELITE_MAX_PROPS = 3;
-
-        // 道具类型概率（平衡配置）
-        public static final double BLOOD_PROP_RATE = 0.20;        // 保持0.20
-        public static final double BULLET_PROP_RATE = 0.35;       // 保持35%
-        public static final double SUPER_BULLET_PROP_RATE = 0.25; // 保持25%
-        public static final double BOMB_PROP_RATE = 0.20;         // 保持20%
-
-        // Boss道具配置
+        // Boss掉落道具数量下限
         public static final int BOSS_MIN_PROPS = 2;
+        // Boss掉落道具数量上限
         public static final int BOSS_MAX_PROPS = 4;
+
+        // 血量道具出现概率（0~1之间）
+        public static final double BLOOD_PROP_RATE = 0.15;
+        // 普通子弹道具出现概率（0~1之间）
+        public static final double BULLET_PROP_RATE = 0.35;
+        // 超级子弹道具出现概率（0~1之间）
+        public static final double SUPER_BULLET_PROP_RATE = 0.25;
+        // 炸弹道具出现概率（0~1之间）
+        public static final double BOMB_PROP_RATE = 0.25;
     }
 
     public static class Hard {
-        // 属性调整因子 - 困难难度（适度下调）
-        public static final double HP_MULTIPLIER = 1.1;           // 从1.3降到1.1
-        public static final double SPEED_MULTIPLIER = 1.2;        // 从1.5降到1.2
-        public static final double POWER_MULTIPLIER = 1.1;        // 从1.3降到1.1
+        // 敌机血量倍数（相对于基础值）
+        public static final double HP_MULTIPLIER = 1.4;
+        // 敌机速度倍数（相对于基础值）
+        public static final double SPEED_MULTIPLIER = 1.4;
+        // 敌机攻击力倍数（相对于基础值）
+        public static final double POWER_MULTIPLIER = 1.3;
 
-        // 生成配置（适度下调）
-        public static final int MAX_ENEMY_COUNT = 6;              // 从7降到6
-        public static final double ELITE_ENEMY_PROB = 0.35;       // 从0.4降到0.35
-        public static final int ENEMY_GENERATE_CYCLE = 600;       // 从500增加到600
+        // 同屏最大敌机数量
+        public static final int MAX_ENEMY_COUNT = 6;
+        // 精英敌机出现概率（0~1之间）
+        public static final double ELITE_ENEMY_PROB = 0.4;
+        // 精英敌机中出现超级精英的概率（0~1之间）
+        public static final double SUPER_ELITE_RATIO = 0.35;
+        // 敌机生成周期（毫秒，数值越小生成越快）
+        public static final int ENEMY_GENERATE_CYCLE = 550;
 
-        // 射击配置（适度下调）
-        public static final int HERO_SHOOT_CYCLE = 350;           // 从300增加到350
-        public static final int ENEMY_SHOOT_CYCLE = 700;          // 从600增加到700
+        // 英雄机射击周期（毫秒，数值越小射击越快）
+        public static final int HERO_SHOOT_CYCLE = 400;
+        // 敌机射击周期（毫秒，数值越小射击越快）
+        public static final int ENEMY_SHOOT_CYCLE = 1000;
 
-        // Boss配置（适度下调）
+        // 是否存在Boss敌机
         public static final boolean HAS_BOSS = true;
-        public static final int BOSS_SCORE_THRESHOLD = 300;       // 从200增加到300
-        public static final int BOSS_SCORE_INTERVAL = 500;        // 从400增加到500
+        // Boss出现所需分数阈值
+        public static final int BOSS_SCORE_THRESHOLD = 450;
+        // Boss血量是否随出现次数增加
         public static final boolean BOSS_HP_INCREASES = true;
-        public static final double BOSS_HP_INCREASE_FACTOR = 1.1; // 从1.2降到1.1
+        // Boss血量增加倍数
+        public static final double BOSS_HP_INCREASE_FACTOR = 1.1;
 
-        // 难度增长（适度下调）
+        // 是否开启随时间难度增长
         public static final boolean INCREASE_DIFFICULTY = true;
-        public static final int DIFFICULTY_INCREASE_INTERVAL = 800; // 从500增加到800
+        // 难度增长间隔（毫秒）
+        public static final int DIFFICULTY_INCREASE_INTERVAL = 1200;
 
-        // 道具掉落配置 - 困难难度（适度增加道具帮助玩家）
-        public static final double ELITE_PROP_RATE = 0.55;        // 从0.5增加到0.55
-        public static final double SUPER_ELITE_PROP_RATE = 0.35;  // 从0.3增加到0.35
+        // 精英敌机道具掉落概率（0~1之间）
+        public static final double ELITE_PROP_RATE = 0.30;
+        // 超级精英敌机道具掉落概率（0~1之间）
+        public static final double SUPER_ELITE_PROP_RATE = 0.2;
+        // 超级精英敌机掉落道具数量下限
         public static final int SUPER_ELITE_MIN_PROPS = 2;
+        // 超级精英敌机掉落道具数量上限
         public static final int SUPER_ELITE_MAX_PROPS = 4;
+        // Boss掉落道具数量下限
         public static final int BOSS_MIN_PROPS = 3;
+        // Boss掉落道具数量上限
         public static final int BOSS_MAX_PROPS = 5;
 
-        // 道具类型概率（困难难度：适度增加血量道具）
-        public static final double BLOOD_PROP_RATE = 0.15;        // 从0.10增加到0.15
-        public static final double BULLET_PROP_RATE = 0.30;       // 保持30%
-        public static final double SUPER_BULLET_PROP_RATE = 0.25; // 保持25%
-        public static final double BOMB_PROP_RATE = 0.30;         // 从0.35降到0.30
+        // 血量道具出现概率（0~1之间）
+        public static final double BLOOD_PROP_RATE = 0.12;
+        // 普通子弹道具出现概率（0~1之间）
+        public static final double BULLET_PROP_RATE = 0.30;
+        // 超级子弹道具出现概率（0~1之间）
+        public static final double SUPER_BULLET_PROP_RATE = 0.25;
+        // 炸弹道具出现概率（0~1之间）
+        public static final double BOMB_PROP_RATE = 0.33;
     }
 }
