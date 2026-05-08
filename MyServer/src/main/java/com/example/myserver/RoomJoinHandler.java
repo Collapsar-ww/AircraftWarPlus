@@ -43,8 +43,8 @@ public class RoomJoinHandler implements HttpHandler {
         }
 
         String json = String.format(
-                "{\"playerId\":\"%s\",\"opponentName\":\"%s\"}",
-                room.getPlayer2Id(), room.getPlayer1Name());
+                "{\"playerId\":\"%s\",\"opponentName\":\"%s\",\"difficulty\":\"%s\"}",
+                room.getPlayer2Id(), room.getPlayer1Name(), room.getDifficulty());
         sendResponse(exchange, 200, json);
         System.out.println("Player " + playerName + " joined room: " + roomId);
     }

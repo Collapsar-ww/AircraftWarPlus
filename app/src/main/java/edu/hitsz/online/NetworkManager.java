@@ -52,9 +52,9 @@ public class NetworkManager {
 
     // ===== HTTP =====
 
-    public void createRoom(String playerName, RoomCallback callback) {
+    public void createRoom(String playerName, String difficulty, RoomCallback callback) {
         String url = "http://" + serverIp + ":" + HTTP_PORT + "/room/create";
-        String body = "{\"playerName\":\"" + playerName + "\"}";
+        String body = "{\"playerName\":\"" + playerName + "\",\"difficulty\":\"" + difficulty + "\"}";
         //创建OkHttp的请求体，指定Content-Type为JSON
         RequestBody rb = RequestBody.create(body, MediaType.get("application/json; charset=utf-8"));
         //构建POST请求对象
@@ -146,6 +146,10 @@ public class NetworkManager {
                         mainHandler.post(() -> {
                             if (eventListener != null) eventListener.onOpponentDead();
                         });
+                    } else if (msg.startsWith("OPPONENT_LEFT:")) {
+                        mainHandler.post(() -> {
+                            if (eventListener != null) eventListener.onOpponentLeft();
+                        });
                     } else if (msg.startsWith("BATTLE_OVER:")) {
                         String params = msg.substring(12);
                         int myScore = 0, oppScore = 0;
@@ -220,6 +224,7 @@ public class NetworkManager {
     public interface OnlineEventListener {
         void onOpponentScoreUpdated(int score);
         void onOpponentDead();
+        void onOpponentLeft();
         void onBattleOver(int myScore, int opponentScore);
         void onConnectionError(String msg);
     }

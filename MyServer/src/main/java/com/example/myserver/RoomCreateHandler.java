@@ -30,8 +30,10 @@ public class RoomCreateHandler implements HttpHandler {
         String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
         String playerName = extractJson(body, "playerName");
         if (playerName == null || playerName.isEmpty()) playerName = "Player1";
+        String difficulty = extractJson(body, "difficulty");
+        if (difficulty == null || difficulty.isEmpty()) difficulty = "简单";
 
-        Room room = roomManager.createRoom(playerName);
+        Room room = roomManager.createRoom(playerName, difficulty);
         String json = String.format(
                 "{\"roomId\":\"%s\",\"playerId\":\"%s\",\"playerName\":\"%s\"}",
                 room.getRoomId(), room.getPlayer1Id(), playerName);

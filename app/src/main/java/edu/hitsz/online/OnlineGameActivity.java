@@ -28,6 +28,8 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
     private GameView gameView;
     private String roomId;
     private String playerId;
+    private String playerName;
+    private String difficulty;
     private boolean myDead = false;
 
     private final Handler handler = new Handler(Looper.getMainLooper()) {
@@ -52,9 +54,11 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         GameConfig.Screen.setScreenSize(dm.widthPixels, dm.heightPixels);
 
-        roomId   = getIntent().getStringExtra("roomId");
-        playerId = getIntent().getStringExtra("playerId");
-        String difficulty = getIntent().getStringExtra("difficulty");
+        roomId     = getIntent().getStringExtra("roomId");
+        playerId   = getIntent().getStringExtra("playerId");
+        playerName = getIntent().getStringExtra("playerName");
+        difficulty = getIntent().getStringExtra("difficulty");
+        if (playerName == null || playerName.isEmpty()) playerName = "Player";
         if (difficulty == null) difficulty = "简单";
 
         ImageManager.setBackgroundByDifficulty(difficulty);
@@ -101,6 +105,11 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
     }
 
     @Override
+    public void onOpponentLeft() {
+        Toast.makeText(this, "对手已退出，继续游戏直到你阵亡...", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     public void onBattleOver(int myScore, int opponentScore) {
         showBattleResult(myScore, opponentScore);
     }
@@ -124,9 +133,9 @@ public class OnlineGameActivity extends Activity implements NetworkManager.Onlin
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("保存并查看排行榜", (d, w) -> {
-                    RankingManager.addScore("联机玩家-" + playerId, myScore, "联机");
+                    RankingManager.addScore(playerName, myScore, difficulty);
                     Intent leaderIntent = new Intent(this, LeaderboardActivity.class);
-                    leaderIntent.putExtra("difficulty", "联机");
+                    leaderIntent.putExtra("difficulty", difficulty);
                     startActivity(leaderIntent);
                     finish();
                 })

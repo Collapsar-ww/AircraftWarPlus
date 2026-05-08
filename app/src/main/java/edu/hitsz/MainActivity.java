@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
      */
     public void onOnlineGame(View view) {
         startActivity(new Intent(this, OnlineRoomActivity.class));
+        //启动一个新的 Activity，创建一个跳转意图，从当前 Activity（this）跳转到 OnlineRoomActivity
     }
 
     @Override

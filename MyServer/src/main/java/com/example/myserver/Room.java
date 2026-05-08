@@ -12,6 +12,7 @@ public class Room {
 
     private final String player1Name;
     private String player2Name = null;
+    private final String difficulty;
 
     private volatile int score1 = 0;
     private volatile int score2 = 0;
@@ -22,9 +23,10 @@ public class Room {
     private volatile PrintWriter writer1;
     private volatile PrintWriter writer2;
 
-    public Room(String roomId, String player1Name) {
+    public Room(String roomId, String player1Name, String difficulty) {
         this.roomId = roomId;
         this.player1Name = player1Name;
+        this.difficulty = difficulty;
     }
 
     public synchronized boolean join(String player2Name) {
@@ -74,12 +76,25 @@ public class Room {
 
     public synchronized void handleDisconnect(String playerId) {
         if (state == RoomState.OVER) return;
-        state = RoomState.OVER;
-        if ("p1".equals(playerId)) {
-            sendToPlayer2("BATTLE_OVER:myScore=" + score2 + ",opponentScore=" + score1);
-        } else {
-            sendToPlayer1("BATTLE_OVER:myScore=" + score1 + ",opponentScore=" + score2);
+
+        boolean isP1 = "p1".equals(playerId);
+
+        // 若断连玩家尚未标记为死亡，则视为立即死亡并通知对方继续游戏
+        if (isP1 && !dead1) {
+            dead1 = true;
+            sendToPlayer2("OPPONENT_LEFT:finalScore=" + score1);
+        } else if (!isP1 && !dead2) {
+            dead2 = true;
+            sendToPlayer1("OPPONENT_LEFT:finalScore=" + score2);
         }
+
+        // 若双方均已死亡（含刚断连的一方），则结束对局
+        if (dead1 && dead2) {
+            state = RoomState.OVER;
+            sendToPlayer1("BATTLE_OVER:myScore=" + score1 + ",opponentScore=" + score2);
+            sendToPlayer2("BATTLE_OVER:myScore=" + score2 + ",opponentScore=" + score1);
+        }
+        // 否则存活玩家继续，直到其发送 DEAD 消息
     }
 
     public synchronized void sendToPlayer1(String msg) {
@@ -95,6 +110,7 @@ public class Room {
     public String getPlayer2Id() { return player2Id; }
     public String getPlayer1Name() { return player1Name; }
     public String getPlayer2Name() { return player2Name; }
+    public String getDifficulty() { return difficulty; }
     public RoomState getState() { return state; }
     public int getScore(String playerId) { return "p1".equals(playerId) ? score1 : score2; }
 }

@@ -57,7 +57,6 @@ public class LeaderboardActivity extends Activity {
             if      (checkedId == R.id.rbEasy)   currentDifficulty = "简单";
             else if (checkedId == R.id.rbNormal) currentDifficulty = "普通";
             else if (checkedId == R.id.rbHard)   currentDifficulty = "困难";
-            else if (checkedId == R.id.rbOnline) currentDifficulty = "联机";
             refreshList();
         });
 
@@ -68,7 +67,6 @@ public class LeaderboardActivity extends Activity {
         switch (difficulty) {
             case "普通": ((RadioButton) rg.findViewById(R.id.rbNormal)).setChecked(true); break;
             case "困难": ((RadioButton) rg.findViewById(R.id.rbHard)).setChecked(true);   break;
-            case "联机": ((RadioButton) rg.findViewById(R.id.rbOnline)).setChecked(true); break;
             default:    ((RadioButton) rg.findViewById(R.id.rbEasy)).setChecked(true);   break;
         }
     }

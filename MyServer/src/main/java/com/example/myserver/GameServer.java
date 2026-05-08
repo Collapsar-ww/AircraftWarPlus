@@ -12,18 +12,18 @@ public class GameServer {
     public static final int SOCKET_PORT = 9091;
 
     public static void main(String[] args) throws IOException {
-        // 创建房间管理器,通过ConcurrentHashMap<String, Room>存储所有房间
+        //房间的数据都由 RoomManager 统一管理，它持有一个 ConcurrentHashMap
+        //key 是房间号，value 是 Room 对象。三个 Handler 都拿到同一个 RoomManager 实例，从而实现数据共享
         RoomManager roomManager = new RoomManager();
 
         // 启动 HTTP 服务器（房间管理）
         HttpServer httpServer = HttpServer.create(new InetSocketAddress(HTTP_PORT), 0);
-        //注册三个路由
+        //注册了三个路径，每个路径对应一个 Handler 类来处理请求
         httpServer.createContext("/room/create", new RoomCreateHandler(roomManager));
         httpServer.createContext("/room/join",   new RoomJoinHandler(roomManager));
         httpServer.createContext("/room/status", new RoomStatusHandler(roomManager));
-        //设置线程池，最多同时处理 4 个 HTTP 请求
+        //线程池设了 4 个线程，可以并发处理多个请求
         httpServer.setExecutor(Executors.newFixedThreadPool(4));
-        //正式启动，开始监听端口
         httpServer.start();
         System.out.println("HTTP Server started on port " + HTTP_PORT);
 

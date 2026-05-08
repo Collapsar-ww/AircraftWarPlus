@@ -8,9 +8,9 @@ public class RoomManager {
     private final ConcurrentHashMap<String, Room> rooms = new ConcurrentHashMap<>();
     private final AtomicInteger idCounter = new AtomicInteger(1);
 
-    public Room createRoom(String playerName) {
+    public Room createRoom(String playerName, String difficulty) {
         String roomId = "R" + String.format("%03d", idCounter.getAndIncrement());
-        Room room = new Room(roomId, playerName);
+        Room room = new Room(roomId, playerName, difficulty);
         rooms.put(roomId, room);
         return room;
     }
